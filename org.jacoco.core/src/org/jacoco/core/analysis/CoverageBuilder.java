@@ -27,6 +27,9 @@ import org.jacoco.core.internal.analysis.SourceFileCoverageImpl;
 import org.jacoco.core.internal.diff.ClassInfo;
 import org.jacoco.core.internal.diff.CodeDiff;
 import org.jacoco.core.internal.diff.MethodInfo;
+import org.jacoco.core.internal.diff.SourceInfo;
+import org.jacoco.core.utils.FileUtils;
+import org.jacoco.core.utils.LogUtils;
 import org.jfaster.mango.operator.Mango;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -48,20 +51,31 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 public class CoverageBuilder implements ICoverageVisitor {
 
-    private static Map<String, IClassCoverage> classes;
+    public static Map<String, IClassCoverage> classes;
 
     private static Map<String, ISourceFileCoverage> sourcefiles;
 
     private static Map<String, IPackageCoverage> packages;
 
+    /**
+     * key: ClassInfo.getPackages() + "." + ClassInfo.getClassName();
+     */
     public static Map<String, ClassInfo> classInfos;
+    /**
+     * key eg. com/jacoco/demo/shortcut/MyShortcutManager.kt
+     * 记录修改的代码文件信息
+     */
+    public static Map<String, SourceInfo> sourceInfoMap = new HashMap<>();
 
     public static volatile CoverageRecordDao coverageRecordDao;
     public static volatile CoverageRateRecordDao coverageRateRecordDao;
 
     public static String project;
 
-    public static void init(String mysqlJdbcUrl, String userName, String password, String title) {
+    public static void init(String mysqlJdbcUrl, String userName, String password, String title, boolean useSql) {
+        if (!useSql) {
+            return;
+        }
         if (coverageRecordDao == null) {
             synchronized (CoverageBuilder.class) {
                 if (coverageRecordDao == null) {
@@ -110,7 +124,11 @@ public class CoverageBuilder implements ICoverageVisitor {
 
     private Map<String, ClassInfo> converToMap(List<ClassInfo> classInfos) {
         return classInfos.stream().collect(Collectors.toMap(
-                c -> c.getPackages() + "." + c.getClassName(), c -> c));
+                c -> {
+                    String key = c.getPackages() + "." + c.getClassName();
+//                    LogUtils.log("converToMap:: " + key + ", " + c.getSimpleInfo());
+                    return key;
+                }, c -> c));
     }
 
     /**
@@ -191,6 +209,11 @@ public class CoverageBuilder implements ICoverageVisitor {
 
     public void visitCoverage(final IClassCoverage coverage) {
         final String name = coverage.getName();
+        SourceInfo sourceInfo = Utils.getSourceInfo(coverage.getPackageName() + "/" + coverage.getSourceFileName());
+        if (sourceInfo == null) {
+            return;
+        }
+        LogUtils.log(getClass(), "visitCoverage", "put it into classes:: srcFile = " + coverage.getSourceFileName() + ", >> sourceInfo=" + sourceInfo);
         final IClassCoverage dup = classes.put(name, coverage);
         if (dup != null) {
             if (dup.getId() != coverage.getId()) {
@@ -199,6 +222,7 @@ public class CoverageBuilder implements ICoverageVisitor {
             }
         } else {
             final String source = coverage.getSourceFileName();
+            LogUtils.log(getClass(), "visitCoverage", "name = " + name + ", source = " + source);
             if (source != null) {
                 final SourceFileCoverageImpl sourceFile = getSourceFile(source,
                         coverage.getPackageName());
@@ -252,5 +276,19 @@ public class CoverageBuilder implements ICoverageVisitor {
         if (packages != null) {
             packages.put(packageName, packageCoverage);
         }
+    }
+
+    public static void addSourceInfo(ClassInfo i) {
+        if (i == null) {
+            return;
+        }
+        SourceInfo sourceInfo = new SourceInfo();
+        String path = i.getPackages().replace(".", "/") + "/" + FileUtils.getFileName(i.getClassFile());
+        sourceInfo.setClassFile(path);
+        sourceInfo.setAddLines(i.getAddLines());
+        sourceInfo.setDelLines(i.getDelLines());
+        sourceInfo.setType(i.getType());
+        sourceInfo.setPackages(i.getPackages());
+        sourceInfoMap.put(path, sourceInfo);
     }
 }

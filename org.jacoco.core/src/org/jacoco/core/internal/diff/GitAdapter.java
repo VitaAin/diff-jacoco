@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.jacoco.core.internal.diff;
 
+import com.mysql.jdbc.StringUtils;
 import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -22,6 +23,7 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.jacoco.core.utils.LogUtils;
 
 import java.io.*;
 import java.util.*;
@@ -30,6 +32,8 @@ import java.util.*;
  * Git操作类
  */
 public class GitAdapter {
+
+    public static String sUserName, sUserPwd;
     private Git git;
     private Repository repository;
     private String gitFilePath;
@@ -62,13 +66,22 @@ public class GitAdapter {
         return repository;
     }
 
+    public static void setUserInfo(String username, String password) {
+        sUserName = username;
+        sUserPwd = password;
+    }
+
     /**
      * git授权。需要设置拥有所有权限的用户
      * @param username  git用户名
      * @param password  git用户密码
      */
     public static void setCredentialsProvider(String username, String password) {
+        if (StringUtils.isNullOrEmpty(username) || StringUtils.isNullOrEmpty(password)) {
+            return;
+        }
         if(usernamePasswordCredentialsProvider == null || !usernamePasswordCredentialsProvider.isInteractive()){
+            LogUtils.log("======= init credential on git =======");
             usernamePasswordCredentialsProvider = new UsernamePasswordCredentialsProvider(username,password);
         }
     }

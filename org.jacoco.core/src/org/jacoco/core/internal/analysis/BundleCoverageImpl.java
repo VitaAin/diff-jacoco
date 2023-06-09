@@ -25,6 +25,7 @@ import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.IPackageCoverage;
 import org.jacoco.core.analysis.ISourceFileCoverage;
+import org.jacoco.core.utils.LogUtils;
 
 /**
  * Implementation of {@link IBundleCoverage}.
@@ -76,6 +77,7 @@ public class BundleCoverageImpl extends CoverageNodeImpl implements
 
         final Map<String, Collection<ISourceFileCoverage>> sourceFilesByPackage = new HashMap<String, Collection<ISourceFileCoverage>>();
         for (final ISourceFileCoverage s : sourcefiles) {
+//            LogUtils.log("BundleCoverageImpl groupByPackage: addByName: " + s.getPackageName() + ", " + s.getName());
             addByName(sourceFilesByPackage, s.getPackageName(), s);
         }
 

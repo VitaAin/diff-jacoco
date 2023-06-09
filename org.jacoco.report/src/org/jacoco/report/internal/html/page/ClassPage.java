@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Marc R. Hoffmann - initial API and implementation
- *    
+ *
  *******************************************************************************/
 package org.jacoco.report.internal.html.page;
 
@@ -15,6 +15,9 @@ import java.io.IOException;
 
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.IMethodCoverage;
+import org.jacoco.core.analysis.Utils;
+import org.jacoco.core.internal.diff.SourceInfo;
+import org.jacoco.core.utils.LogUtils;
 import org.jacoco.report.internal.ReportOutputFolder;
 import org.jacoco.report.internal.html.HTMLElement;
 import org.jacoco.report.internal.html.IHTMLReportContext;
@@ -26,90 +29,94 @@ import org.jacoco.report.internal.html.ILinkable;
  */
 public class ClassPage extends TablePage<IClassCoverage> {
 
-	private final ILinkable sourcePage;
+    private final ILinkable sourcePage;
 
-	/**
-	 * Creates a new visitor in the given context.
-	 * 
-	 * @param classNode
-	 *            coverage data for this class
-	 * @param parent
-	 *            optional hierarchical parent
-	 * @param sourcePage
-	 *            corresponding source page or <code>null</code>
-	 * @param folder
-	 *            base folder to create this page in
-	 * @param context
-	 *            settings context
-	 */
-	public ClassPage(final IClassCoverage classNode, final ReportPage parent,
-			final ILinkable sourcePage, final ReportOutputFolder folder,
-			final IHTMLReportContext context) {
-		super(classNode, parent, folder, context);
-		this.sourcePage = sourcePage;
-		context.getIndexUpdate().addClass(this, classNode.getId());
-	}
+    /**
+     * Creates a new visitor in the given context.
+     *
+     * @param classNode  coverage data for this class
+     * @param parent     optional hierarchical parent
+     * @param sourcePage corresponding source page or <code>null</code>
+     * @param folder     base folder to create this page in
+     * @param context    settings context
+     */
+    public ClassPage(final IClassCoverage classNode, final ReportPage parent,
+                     final ILinkable sourcePage, final ReportOutputFolder folder,
+                     final IHTMLReportContext context) {
+        super(classNode, parent, folder, context);
+        this.sourcePage = sourcePage;
+        context.getIndexUpdate().addClass(this, classNode.getId());
+    }
 
-	@Override
-	protected String getOnload() {
-		return "initialSort(['breadcrumb'])";
-	}
+    @Override
+    protected String getOnload() {
+        return "initialSort(['breadcrumb'])";
+    }
 
-	@Override
-	public void render() throws IOException {
-		for (final IMethodCoverage m : getNode().getMethods()) {
-			final String label = context.getLanguageNames().getMethodName(
-					getNode().getName(), m.getName(), m.getDesc(),
-					m.getSignature());
-			addItem(new MethodItem(m, label, sourcePage));
-		}
-		super.render();
-	}
+    @Override
+    public void render() throws IOException {
+        IClassCoverage node = getNode();
+//        LogUtils.logWrap();
+//        LogUtils.log(getClass(), "render", "getSourceFileName=" + node.getSourceFileName() + ", getPackageName=" + node.getPackageName() + ", getName=" + node.getName());
+        SourceInfo sourceInfo = Utils.getSourceInfo(node);
+//        LogUtils.logLine();
+//        LogUtils.log(getClass(), "render", "sourceInfo=" + sourceInfo);
+        for (final IMethodCoverage m : node.getMethods()) {
+            // 只列出含有变更行的方法
+            if (Utils.linesContainsAddLines(m.getFirstLine(), m.getLastLine(), sourceInfo)) {
+                final String label = context.getLanguageNames().getMethodName(
+                        node.getName(), m.getName(), m.getDesc(),
+                        m.getSignature());
+                addItem(new MethodItem(m, label, sourcePage));
+            }
+        }
+        super.render();
+    }
 
-	@Override
-	protected String getFileName() {
-		final String vmname = getNode().getName();
-		final int pos = vmname.lastIndexOf('/');
-		final String shortname = pos == -1 ? vmname : vmname.substring(pos + 1);
-		return shortname + ".html";
-	}
+    @Override
+    protected String getFileName() {
+        final String vmname = getNode().getName();
+        final int pos = vmname.lastIndexOf('/');
+        final String shortname = pos == -1 ? vmname : vmname.substring(pos + 1);
+        return shortname + ".html";
+    }
 
-	@Override
-	public String getLinkLabel() {
-		return context.getLanguageNames().getClassName(getNode().getName(),
-				getNode().getSignature(), getNode().getSuperName(),
-				getNode().getInterfaceNames());
-	}
+    @Override
+    public String getLinkLabel() {
+        return context.getLanguageNames().getClassName(getNode().getName(),
+                getNode().getSignature(), getNode().getSuperName(),
+                getNode().getInterfaceNames());
+    }
 
-	@Override
-	protected void content(HTMLElement body) throws IOException {
-		if (getNode().isNoMatch()) {
-			body.p().text(
-					"A different version of class was executed at runtime.");
-		}
+    @Override
+    protected void content(HTMLElement body) throws IOException {
+        if (getNode().isNoMatch()) {
+            body.p().text(
+                    "A different version of class was executed at runtime.");
+        }
 
-		if (getNode().getLineCounter().getTotalCount() == 0) {
-			body.p().text(
-					"Class files must be compiled with debug information to show line coverage.");
-		}
+        if (getNode().getLineCounter().getTotalCount() == 0) {
+            body.p().text(
+                    "Class files must be compiled with debug information to show line coverage.");
+        }
 
-		final String sourceFileName = getNode().getSourceFileName();
-		if (sourceFileName == null) {
-			body.p().text(
-					"Class files must be compiled with debug information to link with source files.");
+        final String sourceFileName = getNode().getSourceFileName();
+        if (sourceFileName == null) {
+            body.p().text(
+                    "Class files must be compiled with debug information to link with source files.");
 
-		} else if (sourcePage == null) {
-			final String sourcePath;
-			if (getNode().getPackageName().length() != 0) {
-				sourcePath = getNode().getPackageName() + "/" + sourceFileName;
-			} else {
-				sourcePath = sourceFileName;
-			}
-			body.p().text("Source file \"" + sourcePath
-					+ "\" was not found during generation of report.");
-		}
+        } else if (sourcePage == null) {
+            final String sourcePath;
+            if (getNode().getPackageName().length() != 0) {
+                sourcePath = getNode().getPackageName() + "/" + sourceFileName;
+            } else {
+                sourcePath = sourceFileName;
+            }
+            body.p().text("Source file \"" + sourcePath
+                    + "\" was not found during generation of report.");
+        }
 
-		super.content(body);
-	}
+        super.content(body);
+    }
 
 }

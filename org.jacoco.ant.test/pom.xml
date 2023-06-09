@@ -39,10 +39,32 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-antunit</artifactId>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant-junit</artifactId>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
   </dependencies>
 

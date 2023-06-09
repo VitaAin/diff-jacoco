@@ -14,12 +14,15 @@ package org.jacoco.core.internal.analysis;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jacoco.core.analysis.Utils;
 import org.jacoco.core.internal.analysis.filter.Filters;
 import org.jacoco.core.internal.analysis.filter.IFilter;
 import org.jacoco.core.internal.analysis.filter.IFilterContext;
+import org.jacoco.core.internal.diff.SourceInfo;
 import org.jacoco.core.internal.flow.ClassProbesVisitor;
 import org.jacoco.core.internal.flow.MethodProbesVisitor;
 import org.jacoco.core.internal.instr.InstrSupport;
+import org.jacoco.core.utils.LogUtils;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -77,6 +80,7 @@ public class ClassAnalyzer extends ClassProbesVisitor
 
 	@Override
 	public void visitSource(final String source, final String debug) {
+		LogUtils.log(ClassAnalyzer.class, "visitSource", "source = " + source + ", coverage.getPackageName = " + coverage.getPackageName());
 		coverage.setSourceFileName(stringPool.get(source));
 		sourceDebugExtension = debug;
 	}
@@ -85,6 +89,11 @@ public class ClassAnalyzer extends ClassProbesVisitor
 	public MethodProbesVisitor visitMethod(final int access, final String name,
 			final String desc, final String signature,
 			final String[] exceptions) {
+		SourceInfo sourceInfo = Utils.getSourceInfo(coverage);
+		if (sourceInfo == null) {
+			return null;
+		}
+		LogUtils.log(ClassAnalyzer.class, "visitMethod", "coverage.getName = " + coverage.getName() + ", coverage.getPackageName = " + coverage.getPackageName() + ", sourceInfo = " + sourceInfo);
 
 		InstrSupport.assertNotInstrumented(name, coverage.getName());
 
@@ -96,8 +105,11 @@ public class ClassAnalyzer extends ClassProbesVisitor
 			public void accept(final MethodNode methodNode,
 					final MethodVisitor methodVisitor) {
 				super.accept(methodNode, methodVisitor);
-				addMethodCoverage(stringPool.get(name), stringPool.get(desc),
-						stringPool.get(signature), builder, methodNode);
+				SourceInfo si = Utils.getSourceInfo(coverage);
+				if (si != null) {
+					addMethodCoverage(stringPool.get(name), stringPool.get(desc),
+							stringPool.get(signature), builder, methodNode);
+				}
 			}
 		};
 	}
@@ -112,10 +124,16 @@ public class ClassAnalyzer extends ClassProbesVisitor
 		final MethodCoverageImpl mc = new MethodCoverageImpl(name, desc,
 				signature);
 		mcc.calculate(mc);
+		SourceInfo si = Utils.getSourceInfo(coverage);
+		boolean containsAddLines = Utils.linesContainsAddLines(mc.getFirstLine(), mc.getLastLine(), si);
+		LogUtils.log(ClassAnalyzer.class, "addMethodCoverage", "containsAddLines = " + containsAddLines);
+		if (containsAddLines) {
+			mcc.increment(mc, coverage);
 
-		if (mc.containsCode()) {
-			// Only consider methods that actually contain code
-			coverage.addMethod(mc);
+			if (mc.containsCode()) {
+				// Only consider methods that actually contain code
+				coverage.addMethod(mc);
+			}
 		}
 
 	}

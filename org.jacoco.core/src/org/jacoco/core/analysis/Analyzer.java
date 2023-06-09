@@ -30,7 +30,10 @@ import org.jacoco.core.internal.analysis.ClassCoverageImpl;
 import org.jacoco.core.internal.analysis.StringPool;
 import org.jacoco.core.internal.data.CRC64;
 import org.jacoco.core.internal.flow.ClassProbesAdapter;
+import org.jacoco.core.internal.flow.MethodProbesVisitor;
 import org.jacoco.core.internal.instr.InstrSupport;
+import org.jacoco.core.utils.LogUtils;
+import org.jacoco.core.utils.StringUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
@@ -88,31 +91,61 @@ public class Analyzer {
 			probes = data.getProbes();
 			noMatch = false;
 		}
-		final ClassCoverageImpl coverage = new ClassCoverageImpl(className,
-				classid, noMatch);
+		final ClassCoverageImpl coverage = new ClassCoverageImpl(className, classid, noMatch);
+		LogUtils.log(getClass(), "createAnalyzingVisitor", "classid = " + classid + ", className = " + className
+				+ ", noMatch = " + noMatch);
+
+//		LogUtils.log(getClass(), "createAnalyzingVisitor", "coverage: pkg=" + coverage.getPackageName()
+//				+ ", name=" + coverage.getName() + ", srcFileName=" + coverage.getSourceFileName());
+//		if (coverage.getMethods() != null) {
+//			for (IMethodCoverage methodCv : coverage.getMethods()) {
+//				LogUtils.log(getClass(), "createAnalyzingVisitor", "methodCv: name=" + methodCv.getName()
+//						+ ", desc=" + methodCv.getDesc() + ", sign=" + methodCv.getSignature());
+//			}
+//		}
+//		LogUtils.log(getClass(), "createAnalyzingVisitor", "className = " + className + ">>>>>>> end >>>>>>>");
 		final ClassAnalyzer analyzer = new ClassAnalyzer(coverage, probes,
 				stringPool) {
 			@Override
+			public void visitSource(String source, String debug) {
+				super.visitSource(source, debug);
+				LogUtils.log(Analyzer.class, "visitSource", "source = " + source + ", coverage = " + coverage.getPackageName());
+			}
+
+			@Override
+			public MethodProbesVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+				LogUtils.log(Analyzer.class, "visitMethod", "name = " + name + ", desc = " + desc + ", coverage = " + coverage.getPackageName());
+				return super.visitMethod(access, name, desc, signature, exceptions);
+			}
+
+			@Override
 			public void visitEnd() {
 				super.visitEnd();
+				LogUtils.log(Analyzer.class, "visitEnd", "coverage = " + coverage.getPackageName() + "/" + coverage.getSourceFileName());
 				coverageVisitor.visitCoverage(coverage);
 			}
 		};
 		return new ClassProbesAdapter(analyzer, false);
 	}
 
-	private void analyzeClass(final byte[] source) {
+	private boolean analyzeClass(final byte[] source) {
 		final long classId = CRC64.classId(source);
 		final ClassReader reader = InstrSupport.classReaderFor(source);
+		LogUtils.logWrap();
+		LogUtils.logLine();
+		LogUtils.log(getClass(), "analyzeClass", reader.getClassName());
 		if ((reader.getAccess() & Opcodes.ACC_MODULE) != 0) {
-			return;
+			return false;
 		}
 		if ((reader.getAccess() & Opcodes.ACC_SYNTHETIC) != 0) {
-			return;
+			return false;
 		}
 		final ClassVisitor visitor = createAnalyzingVisitor(classId,
 				reader.getClassName());
-		reader.accept(visitor, 0);
+		if (visitor != null) {
+			reader.accept(visitor, 0);
+		}
+		return visitor != null;
 	}
 
 	/**
@@ -125,10 +158,10 @@ public class Analyzer {
 	 * @throws IOException
 	 *             if the class can't be analyzed
 	 */
-	public void analyzeClass(final byte[] buffer, final String location)
+	public boolean analyzeClass(final byte[] buffer, final String location)
 			throws IOException {
 		try {
-			analyzeClass(buffer);
+			return analyzeClass(buffer);
 		} catch (final RuntimeException cause) {
 			throw analyzerError(location, cause);
 		}
@@ -145,7 +178,7 @@ public class Analyzer {
 	 * @throws IOException
 	 *             if the stream can't be read or the class can't be analyzed
 	 */
-	public void analyzeClass(final InputStream input, final String location)
+	public boolean analyzeClass(final InputStream input, final String location)
 			throws IOException {
 		final byte[] buffer;
 		try {
@@ -153,7 +186,7 @@ public class Analyzer {
 		} catch (final IOException e) {
 			throw analyzerError(location, e);
 		}
-		analyzeClass(buffer, location);
+		return analyzeClass(buffer, location);
 	}
 
 	private IOException analyzerError(final String location,
@@ -181,6 +214,7 @@ public class Analyzer {
 	 */
 	public int analyzeAll(final InputStream input, final String location)
 			throws IOException {
+//		LogUtils.log(getClass(), "analyzeAll", "location = " + location);
 		final ContentTypeDetector detector;
 		try {
 			detector = new ContentTypeDetector(input);
@@ -188,17 +222,18 @@ public class Analyzer {
 			throw analyzerError(location, e);
 		}
 		switch (detector.getType()) {
-		case ContentTypeDetector.CLASSFILE:
-			analyzeClass(detector.getInputStream(), location);
-			return 1;
-		case ContentTypeDetector.ZIPFILE:
-			return analyzeZip(detector.getInputStream(), location);
-		case ContentTypeDetector.GZFILE:
-			return analyzeGzip(detector.getInputStream(), location);
-		case ContentTypeDetector.PACK200FILE:
-			return analyzePack200(detector.getInputStream(), location);
-		default:
-			return 0;
+			case ContentTypeDetector.CLASSFILE:
+				boolean res = analyzeClass(detector.getInputStream(), location);
+				// todo vita 看下这里数量要不要改：：暂时不用改
+				return res ? 1 : 0;
+			case ContentTypeDetector.ZIPFILE:
+				return analyzeZip(detector.getInputStream(), location);
+			case ContentTypeDetector.GZFILE:
+				return analyzeGzip(detector.getInputStream(), location);
+			case ContentTypeDetector.PACK200FILE:
+				return analyzePack200(detector.getInputStream(), location);
+			default:
+				return 0;
 		}
 	}
 
@@ -220,12 +255,22 @@ public class Analyzer {
 				count += analyzeAll(f);
 			}
 		} else {
+			if (!file.exists()) {
+				return 0;
+			}
+			// 排除R.class
+			if (StringUtils.equals("R.class", file.getName()) || file.getName().contains("R$")) {
+				return 0;
+			}
 			final InputStream in = new FileInputStream(file);
 			try {
 				count += analyzeAll(in, file.getPath());
 			} finally {
 				in.close();
 			}
+		}
+		if (count > 0) {
+			LogUtils.log(getClass(), "analyzeAll", file.getName() + " > count >> " + count);
 		}
 		return count;
 	}

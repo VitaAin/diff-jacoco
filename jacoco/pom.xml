@@ -47,17 +47,64 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>org.jacoco.ant</artifactId>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.report</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.agent</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>org.jacoco.ant</artifactId>
       <classifier>nodeps</classifier>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.report</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.agent</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>org.jacoco.cli</artifactId>
       <version>${project.version}</version>
       <classifier>nodeps</classifier>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.report</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <!--<dependency>
       <groupId>${project.groupId}</groupId>

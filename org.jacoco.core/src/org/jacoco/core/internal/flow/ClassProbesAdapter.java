@@ -13,10 +13,13 @@ package org.jacoco.core.internal.flow;
 
 import java.util.Map;
 
-import org.jacoco.core.analysis.CoverageBuilder;
+import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.internal.diff.ClassInfo;
 import org.jacoco.core.internal.diff.MethodInfo;
+import org.jacoco.core.internal.diff.Type;
 import org.jacoco.core.internal.instr.InstrSupport;
+import org.jacoco.core.utils.LogUtils;
+import org.jacoco.core.utils.StringUtils;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.AnalyzerAdapter;
@@ -64,21 +67,30 @@ public class ClassProbesAdapter extends ClassVisitor implements
             final String signature, final String superName,
             final String[] interfaces) {
         this.name = name;
+        LogUtils.log("ClassProbesAdapter visit: name = " + name);
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
+    // todo vita 改造它，只对提取出的每个类的新增或变更方法做解析。
     @Override
     public final MethodVisitor visitMethod(final int access, final String name,
             final String desc, final String signature, final String[] exceptions) {
         final MethodProbesVisitor methodProbes;
         final MethodProbesVisitor mv = cv.visitMethod(access, name, desc,
                 signature, exceptions);
+        LogUtils.log(getClass(), "visitMethod", "^^^ : this.name = " + this.name + ", name = " + name);
         //	增量计算覆盖率
-        if (mv != null && isContainsMethod(name, CoverageBuilder.classInfos)) {
-            methodProbes = mv;
-        } else {
+//        if (mv != null && isContainsMethod(name, CoverageBuilder.classInfos)) {
+//            methodProbes = mv;
+//        } else {
             // We need to visit the method in any case, otherwise probe ids
             // are not reproducible
+//            methodProbes = EMPTY_METHOD_PROBES_VISITOR;
+//        }
+
+        if (mv != null) {
+            methodProbes = mv;
+        } else {
             methodProbes = EMPTY_METHOD_PROBES_VISITOR;
         }
         return new MethodSanitizer(null, access, name, desc, signature,
@@ -87,6 +99,8 @@ public class ClassProbesAdapter extends ClassVisitor implements
             @Override
             public void visitEnd() {
                 super.visitEnd();
+                LogUtils.log(Analyzer.class, "visitEnd", "trackFrames = " + trackFrames
+                        + ", name = " + name + ", desc = " + desc);
                 LabelFlowAnalyzer.markLabels(this);
                 final MethodProbesAdapter probesAdapter = new MethodProbesAdapter(
                         methodProbes, ClassProbesAdapter.this);
@@ -124,10 +138,20 @@ public class ClassProbesAdapter extends ClassVisitor implements
         if (classInfo == null) {
             return false;
         }
+        // add by vita
+        if (StringUtils.equals(Type.ADD, classInfo.getType())) {
+            LogUtils.log("ClassProbesAdapter isContainsMethod: [ADD] name = " + name
+                    + ", currentClassName = " + currentClassName + ", currentMethod = " + currentMethod + ", " + classInfo);
+            return true;
+        }
+
         Map<String, MethodInfo> methodInfos = classInfo.getMethodInfos();
         if (methodInfos == null) {
             return false;
         }
-        return methodInfos.containsKey(currentMethod);
+        boolean b = methodInfos.containsKey(currentMethod);
+        LogUtils.log("======= ClassProbesAdapter isContainsMethod: res = " + b + ", name = " + name
+                + ", currentClassName = " + currentClassName + ", currentMethod = " + currentMethod);
+        return b;
     }
 }

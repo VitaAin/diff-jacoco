@@ -15,6 +15,8 @@ import java.io.IOException;
 
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.IPackageCoverage;
+import org.jacoco.core.analysis.Utils;
+import org.jacoco.core.internal.diff.SourceInfo;
 import org.jacoco.report.ISourceFileLocator;
 import org.jacoco.report.internal.ReportOutputFolder;
 import org.jacoco.report.internal.html.HTMLElement;
@@ -68,12 +70,16 @@ public class PackagePage extends TablePage<IPackageCoverage> {
 			if (!c.containsCode()) {
 				continue;
 			}
-			final ILinkable sourceFilePage = packageSourcePage
-					.getSourceFilePage(c.getSourceFileName());
-			final ClassPage page = new ClassPage(c, this, sourceFilePage,
-					folder, context);
-			page.render();
-			addItem(page);
+			SourceInfo sourceInfo = Utils.getSourceInfo(c);
+			// 只列出含有变更行的类
+			if (Utils.linesContainsAddLines(c.getFirstLine(), c.getLastLine(), sourceInfo)) {
+				final ILinkable sourceFilePage = packageSourcePage
+						.getSourceFilePage(c.getSourceFileName());
+				final ClassPage page = new ClassPage(c, this, sourceFilePage,
+						folder, context);
+				page.render();
+				addItem(page);
+			}
 		}
 	}
 

@@ -19,8 +19,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.analysis.ISourceNode;
+import org.jacoco.core.analysis.Utils;
 import org.jacoco.core.internal.analysis.filter.IFilterOutput;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
@@ -69,13 +71,18 @@ class MethodCoverageCalculator implements IFilterOutput {
 		applyMerges();
 		applyReplacements();
 		ensureCapacity(coverage);
+	}
 
+	void increment(MethodCoverageImpl coverage, IClassCoverage cc) {
 		for (final Entry<AbstractInsnNode, Instruction> entry : instructions
 				.entrySet()) {
 			if (!ignored.contains(entry.getKey())) {
 				final Instruction instruction = entry.getValue();
-				coverage.increment(instruction.getInstructionCounter(),
-						instruction.getBranchCounter(), instruction.getLine());
+				int line = instruction.getLine();
+				if (Utils.linesContainsAddLines(line, line, Utils.getSourceInfo(cc))) {
+					coverage.increment(instruction.getInstructionCounter(),
+							instruction.getBranchCounter(), line);
+				}
 			}
 		}
 

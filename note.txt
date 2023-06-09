@@ -1,0 +1,105 @@
+
+
+# ./jacoco.sh --git-work-dir /Users/wangt/Workspace/Test/JacocoDemo --branch dev_2 --compare-branch dev --report-dir /Users/wangt/Workspace/Test/JacocoDemoReport --source-dirs /Users/wangt/Workspace/Test/JacocoDemo/app/src/main/java,/Users/wangt/Workspace/Test/JacocoDemo/app/libnumberprogressbar/src/main/java  --class-dirs /Users/wangt/Workspace/Test/JacocoDemo/app/build/intermediates/javac/debug/classes,/Users/wangt/Workspace/Test/JacocoDemo/libnumberprogressbar/build/intermediates/javac/debug/classes --remote-host localhost  --remote-port 8044 --git-user-name wangting --git-user-pwd WANGting215930
+
+# ./jacoco.sh --git-work-dir /Users/wangt/Workspace/Test/JacocoDemo --branch dev_2 --compare-branch dev --report-dir /Users/wangt/Workspace/Test/JacocoDemoReport --source-dirs /Users/wangt/Workspace/Test/JacocoDemo/app/src/main/java,/Users/wangt/Workspace/Test/JacocoDemo/app/libnumberprogressbar/src/main/java  --class-dirs /Users/wangt/Workspace/Test/JacocoDemo/app/build/intermediates/javac/debug/classes,/Users/wangt/Workspace/Test/JacocoDemo/libnumberprogressbar/build/intermediates/javac/debug/classes --remote-host localhost  --remote-port 8044 --git-user-name wangting --git-user-pwd WANGting215930 --code-diff-info-file /Users/wangt/Workspace/Test/JacocoDemoReport/diff-dev_2-dev.json
+
+# ./jacoco.sh --git-work-dir /Users/wangt/Workspace/Test/JacocoDemo --branch dev_2 --compare-branch dev --report-dir /Users/wangt/Workspace/Test/JacocoDemoReport --exec-path /Users/wangt/Workspace/Test/JacocoDemoReport/exec/coverage.ec --source-dirs /Users/wangt/Workspace/Test/JacocoDemo/app/src/main/java,/Users/wangt/Workspace/Test/JacocoDemo/app/libnumberprogressbar/src/main/java  --class-dirs /Users/wangt/Workspace/Test/JacocoDemo/app/build/intermediates/javac/debug/classes,/Users/wangt/Workspace/Test/JacocoDemo/libnumberprogressbar/build/intermediates/javac/debug/classes --git-user-name wangting --git-user-pwd WANGting215930
+
+
+
+多次报告合并：
+1、同一版本apk，多次追加写入 ec        支持，生成报告正常
+2、apk升级，追加写入 ec              支持，生成报告正常
+    报告不全，可能与 build 的 class 不同有关，切换分支 build apk 时，不删除 build 目录，生成的报告正常
+3、多个 ec 文件合成一个 ec 文件        支持，生成报告正常
+    根据 classid 合并
+    需在参数接收处兼容多个文件路径读取
+
+
+
+问题：
+
+
+- 不同机器上classid不对应导致报告覆盖率不准确
+    如果将 项目编译打包 和 jacoco报告解析 放在同一台电脑/服务器上，无该问题
+
+
+√ - Kotlin 扩展类（.kt中无类名有方法，如JacocoDemo中的ExtendUtil.kt）未包含到报告中
+    解决：使用 KotlinASTGenerator 解析文件内容
+
+
+√ - 新增代码：类属性中声明匿名内部类，未染色
+
+
+√ - 新增的 Test.kt，未被包含到报告
+√ - .kt文件中未定义类名时，该文件中方法未显示到报告
+    原因：.kt文件中未定义类名时， ASTGenerator.getClassInfo 为空
+
+    1、.kt中与文件名相同的类名
+    2、.kt中与文件名不同的类名
+    3、.kt中未放在类下的方法
+
+
+√ - 被修改的代码整个文件都被染色，期望：被修改的分支被染色，只计算增量部分的覆盖率
+
+
+√ - todo: 屏蔽 R.java 文件
+    解决内部类未染色问题后无该问题
+
+
+√ - 静态内部类、匿名内部类、Kotlin 的 companion object，没有染色
+    解决：只对 ADD/MODIFIED 的文件解析 class，修改报告染色逻辑：根据源码文件路径来判断是否在增量范围内
+
+
+√ - 部分添加的代码文件，代码行前没有增加"+"标识
+    解决内部类未染色问题后无该问题
+
+
+√ - SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+    不影响功能使用
+    解决：添加以下依赖：
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-nop</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+
+
+√ - jgit 用户认证失败情况下，对比本地 tag 未生成增量报告
+    原因：拉取远程tag失败
+    解决：拉取远程tag代码增加try-catch
+
+
+√ - 根据本地造的diff.json文件，未生成增量报告
+    本地造的diff数据不对，缺少 methodInfoList
+
+
+√ - java.lang.IllegalStateException: Duplicate key org.jacoco.core.internal.diff.ClassInfo@60d8c9b7
+    本地造的diff内容中没有 packages 、 className 字段
+
+
+√ - ASTParser.newParser，报错：java.lang.SecurityException: class "org.eclipse.core.runtime.Plugin"'s signer information does not match signer information of other classes in the same package
+    先用本地自己生成的diff内容代替
+    参考：目标平台和Eclipse插件罐之间存在差异。 在这种情况下，罐子是：org.eclipse.equinox.common和org.eclipse.equinox.registry。解决方案：使用相同的罐子，这些罐子不应该是单件插件。
+    解决：org.eclipse.equinox.common 版本由 3.10.200 修改为 3.14.100
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.equinox.common</artifactId>
+      <version>3.14.100</version>
+    </dependency>
+
+
+√ - 依赖库文件、资源文件被扫描
+    增量启用后，无该问题
+
+
+√ - .kt 未扫描到
+    √ 1、.kt文件支持扫描
+    √ 2、.kt文件支持代码覆盖
+        添加kotlin对应的class文件目录，例：$PROJECT_DIR/app/build/tmp/kotlin-classes/debug，参考：https://proandroiddev.com/unified-code-coverage-for-android-revisited-44789c9b722f
+
+
+√ - jgit 用户认证失败，org.eclipse.jgit.api.errors.TransportException: git@gitlab.2345.cn:wangting/JacocoDemo.git: Auth fail
+    将仓库地址更换为 https 的：https://gitlab.2345.cn/wangting/JacocoDemo.git
+

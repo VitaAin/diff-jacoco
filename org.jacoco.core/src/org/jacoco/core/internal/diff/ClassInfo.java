@@ -11,75 +11,76 @@
  *******************************************************************************/
 package org.jacoco.core.internal.diff;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ClassInfo {
-    /**
-     * java文件
-     */
-    private String classFile;
+public class ClassInfo extends SourceInfo {
+//    /**
+//     * java文件
+//     */
+//    private String classFile;
     /**
      * 类名
      */
     private String className;
-    /**
-     * 包名
-     */
-    private String packages;
+//    /**
+//     * 包名
+//     */
+//    private String packages;
 
     /**
      * 类中的方法
      */
     private Map<String, MethodInfo> methodInfos;
 
-    /**
-     * 新增的行数
-     */
-    private List<int[]> addLines;
-
-    /**
-     * 删除的行数
-     */
-    private List<int[]> delLines;
-
-    /**
-     * 修改类型
-     */
-    private String type;
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<int[]> getAddLines() {
-        return addLines;
-    }
-
-    public void setAddLines(List<int[]> addLines) {
-        this.addLines = addLines;
-    }
-
-    public List<int[]> getDelLines() {
-        return delLines;
-    }
-
-    public void setDelLines(List<int[]> delLines) {
-        this.delLines = delLines;
-    }
-
-    public String getClassFile() {
-        return classFile;
-    }
-
-    public void setClassFile(String classFile) {
-        this.classFile = classFile;
-    }
+//    /**
+//     * 新增的行数
+//     */
+//    private List<int[]> addLines;
+//
+//    /**
+//     * 删除的行数
+//     */
+//    private List<int[]> delLines;
+//
+//    /**
+//     * 修改类型
+//     */
+//    private String type;
+//
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public void setType(String type) {
+//        this.type = type;
+//    }
+//
+//    public List<int[]> getAddLines() {
+//        return addLines;
+//    }
+//
+//    public void setAddLines(List<int[]> addLines) {
+//        this.addLines = addLines;
+//    }
+//
+//    public List<int[]> getDelLines() {
+//        return delLines;
+//    }
+//
+//    public void setDelLines(List<int[]> delLines) {
+//        this.delLines = delLines;
+//    }
+//
+//    public String getClassFile() {
+//        return classFile;
+//    }
+//
+//    public void setClassFile(String classFile) {
+//        this.classFile = classFile;
+//    }
 
     public String getClassName() {
         return className;
@@ -89,19 +90,71 @@ public class ClassInfo {
         this.className = className;
     }
 
-    public String getPackages() {
-        return packages;
-    }
-
-    public void setPackages(String packages) {
-        this.packages = packages;
-    }
+//    public String getPackages() {
+//        return packages;
+//    }
+//
+//    public void setPackages(String packages) {
+//        this.packages = packages;
+//    }
 
     public Map<String, MethodInfo> getMethodInfos() {
         return methodInfos;
     }
 
     public void setMethodInfos(List<MethodInfo> methodInfos) {
-        this.methodInfos = methodInfos.stream().collect(Collectors.toMap(MethodInfo::getMethodName, m -> m,(key1,key2)->key2));
+        if (methodInfos != null && methodInfos.size() > 0) {
+            this.methodInfos = methodInfos.stream().collect(Collectors.toMap(MethodInfo::getMethodName, m -> m, (key1, key2) -> key2));
+        } else {
+            this.methodInfos = new HashMap<>();
+        }
+    }
+
+    public String getSimpleInfo() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{")
+                .append("type: ").append(getType())
+                .append(", ")
+                .append("packages: ").append(getPackages())
+                .append(", ")
+                .append("className: ").append(className)
+                .append(", ")
+                .append("classFile: ").append(getClassFile())
+                .append(", ");
+        if (methodInfos != null && methodInfos.size() > 0) {
+            sb.append("methods: ").append(methodInfos.keySet()).append(", ");
+        } else {
+            sb.append("method: [], ");
+        }
+        sb.append("addLines: [");
+        if (getAddLines() != null && getAddLines().size() > 0) {
+            for (int[] addL : getAddLines()) {
+                sb.append("[");
+                for (int l : addL) {
+                    sb.append(l).append(",");
+                }
+                sb.append("],");
+            }
+        }
+        sb.append("]");
+        sb.append("delLines: [");
+        if (getDelLines() != null && getDelLines().size() > 0) {
+            for (int[] delL : getDelLines()) {
+                sb.append("[");
+                for (int l : delL) {
+                    sb.append(l).append(",");
+                }
+                sb.append("],");
+            }
+        }
+        sb.append("]");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return getSimpleInfo();
     }
 }

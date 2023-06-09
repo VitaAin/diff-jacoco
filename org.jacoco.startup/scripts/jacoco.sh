@@ -15,9 +15,11 @@ LIB_JARS=`ls $LIB_HOME|grep .jar|awk '{print "'$LIB_HOME'/"$0}'|tr "\n" ":"`
 
 # JAVA_OPTS
 JAVA_OPTS="-server $JAVA_HEAP_OPTS"
-JAVA_OPTS="${JAVA_OPTS} -XX:+UseConcMarkSweepGC -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDetails -XX:HeapDumpPath=$LOG_PATH -Xloggc:$LOG_PATH/gc.log"
+#JAVA_OPTS="${JAVA_OPTS} -XX:+UseConcMarkSweepGC -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDetails -XX:HeapDumpPath=$LOG_PATH -Xloggc:$LOG_PATH/gc.log"
+JAVA_OPTS="${JAVA_OPTS} -XX:+UseConcMarkSweepGC -XX:+HeapDumpOnOutOfMemoryError -XX:+PrintGCDetails "
 
 # CONFIG_OPTS
 CONFIG_OPTS="--mysql-jdbc-url $MYSQL_JDBC_URL --mysql-user $MYSQL_USER --mysql-password $MYSQL_PASSWORD"
 
-java $JAVA_OPTS -cp $LIB_JARS $SERVICE_NAME $CONFIG_OPTS $@ > $LOG_PATH/jacoco.log 2>&1
+#java $JAVA_OPTS -cp $LIB_JARS $SERVICE_NAME $CONFIG_OPTS $@ > $LOG_PATH/jacoco.log 2>&1
+java $JAVA_OPTS -cp $LIB_JARS $SERVICE_NAME $CONFIG_OPTS $@

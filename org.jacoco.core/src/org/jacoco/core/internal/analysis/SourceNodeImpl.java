@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Marc R. Hoffmann - initial API and implementation
- *    
+ *
  *******************************************************************************/
 package org.jacoco.core.internal.analysis;
 
@@ -15,6 +15,7 @@ import org.jacoco.core.analysis.CoverageNodeImpl;
 import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceNode;
+import org.jacoco.core.utils.LogUtils;
 
 /**
  * Implementation of {@link ISourceNode}.
@@ -28,7 +29,7 @@ public class SourceNodeImpl extends CoverageNodeImpl implements ISourceNode {
 
 	/**
 	 * Create a new source node implementation instance.
-	 * 
+	 *
 	 * @param elementType
 	 *            element type
 	 * @param name
@@ -44,7 +45,7 @@ public class SourceNodeImpl extends CoverageNodeImpl implements ISourceNode {
 	 * Make sure that the internal buffer can keep lines from first to last.
 	 * While the buffer is also incremented automatically, this method allows
 	 * optimization in case the total range is known in advance.
-	 * 
+	 *
 	 * @param first
 	 *            first line number or {@link ISourceNode#UNKNOWN_LINE}
 	 * @param last
@@ -75,18 +76,30 @@ public class SourceNodeImpl extends CoverageNodeImpl implements ISourceNode {
 	 * Increments all counters by the values of the given child. When
 	 * incrementing the line counter it is assumed that the child refers to the
 	 * same source file.
-	 * 
+	 *
 	 * @param child
 	 *            child node to add
 	 */
 	public void increment(final ISourceNode child) {
-		instructionCounter = instructionCounter.increment(child
-				.getInstructionCounter());
-		branchCounter = branchCounter.increment(child.getBranchCounter());
-		complexityCounter = complexityCounter.increment(child
-				.getComplexityCounter());
-		methodCounter = methodCounter.increment(child.getMethodCounter());
-		classCounter = classCounter.increment(child.getClassCounter());
+//		LogUtils.logWrap();
+		LogUtils.logDivider("*", "start");
+		ICounter ic = child.getInstructionCounter();
+		ICounter bc = child.getBranchCounter();
+		ICounter cc = child.getComplexityCounter();
+		ICounter mc = child.getMethodCounter();
+		ICounter clzC = child.getClassCounter();
+        if (child instanceof SourceFileCoverageImpl) {
+            String sourceFilePath = ((SourceFileCoverageImpl) child).getPackageName() + "/" + child.getName();
+            LogUtils.log(getClass(), "increment", "sourceFilePath = " + sourceFilePath);
+        }
+        LogUtils.log(getClass(), "increment", "name=" + child.getName()
+                + ", InstructionCounter=" + ic + ", BranchCounter=" + bc + ", ComplexityCounter=" + cc
+                + ", MethodCounter=" + mc + ", ClassCounter=" + clzC);
+		instructionCounter = instructionCounter.increment(ic);
+		branchCounter = branchCounter.increment(bc);
+		complexityCounter = complexityCounter.increment(cc);
+		methodCounter = methodCounter.increment(mc);
+		classCounter = classCounter.increment(clzC);
 		final int firstLine = child.getFirstLine();
 		if (firstLine != UNKNOWN_LINE) {
 			final int lastLine = child.getLastLine();
@@ -97,13 +110,14 @@ public class SourceNodeImpl extends CoverageNodeImpl implements ISourceNode {
 						line.getBranchCounter(), i);
 			}
 		}
+		LogUtils.logDivider("*", "end");
 	}
 
 	/**
 	 * Increments instructions and branches by the given counter values. If a
 	 * optional line number is specified the instructions and branches are added
 	 * to the given line. The line counter is incremented accordingly.
-	 * 
+	 *
 	 * @param instructions
 	 *            instructions to add
 	 * @param branches

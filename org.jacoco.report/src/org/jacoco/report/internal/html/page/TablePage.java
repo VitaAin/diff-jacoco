@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jacoco.core.analysis.ICoverageNode;
+import org.jacoco.core.utils.LogUtils;
 import org.jacoco.report.internal.ReportOutputFolder;
 import org.jacoco.report.internal.html.HTMLElement;
 import org.jacoco.report.internal.html.IHTMLReportContext;
@@ -59,6 +60,7 @@ public abstract class TablePage<NodeType extends ICoverageNode>
 	 */
 	public void addItem(final ITableItem item) {
 		items.add(item);
+//		LogUtils.log(getClass(), "addItem", "linkLabel = " + item.getLinkLabel());
 	}
 
 	@Override

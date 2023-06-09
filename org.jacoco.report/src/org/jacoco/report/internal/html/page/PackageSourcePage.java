@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.jacoco.core.analysis.IPackageCoverage;
 import org.jacoco.core.analysis.ISourceFileCoverage;
+import org.jacoco.core.utils.LogUtils;
 import org.jacoco.report.ISourceFileLocator;
 import org.jacoco.report.internal.ReportOutputFolder;
 import org.jacoco.report.internal.html.HTMLElement;
@@ -78,11 +79,13 @@ public class PackageSourcePage extends TablePage<IPackageCoverage> {
 
 	private final void renderSourceFilePages() throws IOException {
 		final String packagename = getNode().getName();
+		LogUtils.log("####### PackageSourcePage renderSourceFilePages: packagename = " + packagename);
 		for (final ISourceFileCoverage s : getNode().getSourceFiles()) {
 			if (!s.containsCode()) {
 				continue;
 			}
 			final String sourcename = s.getName();
+			LogUtils.log("####### PackageSourcePage renderSourceFilePages: sourcename = " + sourcename);
 			final Reader reader = locator
 					.getSourceFile(packagename, sourcename);
 			if (reader == null) {

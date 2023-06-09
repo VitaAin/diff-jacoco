@@ -25,22 +25,74 @@
   <description>JaCoCo Core</description>
 
   <dependencies>
+    <!--  add by vita start  -->
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.31</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-nop</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.cretz.kastree</groupId>
+      <artifactId>kastree-ast-jvm</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.cretz.kastree</groupId>
+      <artifactId>kastree-ast-psi</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.cretz.kastree</groupId>
+      <artifactId>kastree-ast-common</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+    <!-- add by vita end -->
+
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-commons</artifactId>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-tree</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-tree</artifactId>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.equinox.common</artifactId>
-      <version>3.10.200</version>
+      <version>3.14.100</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.platform</groupId>
@@ -62,6 +114,16 @@
           <groupId>org.eclipse.platform</groupId>
           <artifactId>org.eclipse.equinox.common</artifactId>
         </exclusion>
+        <!-- add by vita start -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.preferences</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.registry</artifactId>
+        </exclusion>
+        <!-- add by vita end -->
       </exclusions>
     </dependency>
     <dependency>
@@ -78,7 +140,7 @@
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.equinox.registry</artifactId>
-      <version>3.8.200</version>
+      <version>3.10.200</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
@@ -106,12 +168,18 @@
           <groupId>org.eclipse.platform</groupId>
           <artifactId>org.eclipse.equinox.common</artifactId>
         </exclusion>
+        <!-- add by vita start -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.registry</artifactId>
+        </exclusion>
+        <!-- add by vita end -->
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.eclipse.platform</groupId>
       <artifactId>org.eclipse.core.runtime</artifactId>
-      <version>3.16.0</version>
+      <version>3.19.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
@@ -149,6 +217,13 @@
       <artifactId>org.eclipse.core.expressions</artifactId>
       <version>3.6.200</version>
       <exclusions>
+        <!-- add by vita start -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.runtime</artifactId>
+        </exclusion>
+        <!-- add by vita end -->
+
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
           <artifactId>org.eclipse.equinox.common</artifactId>
@@ -164,6 +239,16 @@
           <groupId>org.eclipse.platform</groupId>
           <artifactId>org.eclipse.equinox.common</artifactId>
         </exclusion>
+        <!-- add by vita start -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.registry</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.osgi</artifactId>
+        </exclusion>
+        <!-- add by vita end -->
       </exclusions>
     </dependency>
     <dependency>
@@ -171,6 +256,13 @@
       <artifactId>org.eclipse.core.resources</artifactId>
       <version>3.13.400</version>
       <exclusions>
+        <!-- add by vita start -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.runtime</artifactId>
+        </exclusion>
+        <!-- add by vita end -->
+
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
           <artifactId>org.eclipse.core.expressions</artifactId>
@@ -199,6 +291,17 @@
       <artifactId>org.eclipse.text</artifactId>
       <version>3.8.0</version>
       <exclusions>
+        <!-- add by vita start -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.equinox.preferences</artifactId>
+        </exclusion>
+        <!-- add by vita end -->
+
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
           <artifactId>org.eclipse.core.commands</artifactId>
@@ -228,6 +331,12 @@
           <groupId>org.eclipse.platform</groupId>
           <artifactId>org.eclipse.text</artifactId>
         </exclusion>
+        <!-- add by vita start -->
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.filesystem</artifactId>
+        </exclusion>
+        <!-- add by vita end -->
       </exclusions>
     </dependency>
     <!--git操作-->
@@ -235,6 +344,18 @@
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
       <version>5.5.0.201909110433-r</version>
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <!--mysql 存储-->
     <dependency>
@@ -251,7 +372,24 @@
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
       <version>3.2.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.61</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+    <!-- add by vita end -->
   </dependencies>
 
   <build>

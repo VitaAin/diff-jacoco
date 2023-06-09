@@ -11,6 +11,9 @@
  *******************************************************************************/
 package org.jacoco.core.internal.diff;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MethodInfo {
     /**
      * 方法的md5
@@ -24,6 +27,7 @@ public class MethodInfo {
      * 方法参数
      */
     public String parameters;
+    public List<String> parametersList = new ArrayList<>();
 
     public String getMd5() {
         return md5;
@@ -47,5 +51,16 @@ public class MethodInfo {
 
     public void setParameters(String parameters) {
         this.parameters = parameters;
+    }
+
+    public void addParameter(String parameter) {
+        if (parametersList == null) {
+            parametersList = new ArrayList<>();
+        }
+        parametersList.add(parameter);
+    }
+
+    public List<String> getParametersList() {
+        return parametersList;
     }
 }

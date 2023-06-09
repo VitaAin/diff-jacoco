@@ -34,21 +34,30 @@ public class ASTGenerator {
         this.initCompilationUnit();
     }
 
+    private static boolean logError = false;
+
     /**
      * 获取AST编译单元,首次加载很慢
      */
     private void initCompilationUnit() {
         //  AST编译
-        final ASTParser astParser = ASTParser.newParser(8);
-        final Map<String, String> options = JavaCore.getOptions();
-        JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
-        astParser.setCompilerOptions(options);
-        astParser.setKind(ASTParser.K_COMPILATION_UNIT);
-        astParser.setResolveBindings(true);
-        astParser.setBindingsRecovery(true);
-        astParser.setStatementsRecovery(true);
-        astParser.setSource(javaText.toCharArray());
-        compilationUnit = (CompilationUnit) astParser.createAST(null);
+        try {
+            final ASTParser astParser = ASTParser.newParser(8);
+            final Map<String, String> options = JavaCore.getOptions();
+            JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
+            astParser.setCompilerOptions(options);
+            astParser.setKind(ASTParser.K_COMPILATION_UNIT);
+            astParser.setResolveBindings(true);
+            astParser.setBindingsRecovery(true);
+            astParser.setStatementsRecovery(true);
+            astParser.setSource(javaText.toCharArray());
+            compilationUnit = (CompilationUnit) astParser.createAST(null);
+        } catch (Exception e) {
+            if (!logError) {
+                e.printStackTrace();
+                logError = true;
+            }
+        }
     }
 
     /**
@@ -121,18 +130,21 @@ public class ASTGenerator {
      * @param delLines
      * @return
      */
-    public ClassInfo getClassInfo(List<MethodInfo> methodInfos, List<int[]> addLines, List<int[]> delLines) {
+    public ClassInfo getClassInfo(List<MethodInfo> methodInfos, List<int[]> addLines, List<int[]> delLines, String newJavaPath) {
         TypeDeclaration typeDec = getJavaClass();
         if (typeDec == null || typeDec.isInterface()) {
             return null;
         }
         ClassInfo classInfo = new ClassInfo();
+        classInfo.setClassFile(newJavaPath);
         classInfo.setClassName(getJavaClass().getName().toString());
         classInfo.setPackages(getPackageName());
         classInfo.setMethodInfos(methodInfos);
         classInfo.setAddLines(addLines);
         classInfo.setDelLines(delLines);
-        classInfo.setType("REPLACE");
+        // todo vita 不明白为什么用 REPLACE"
+//        classInfo.setType("REPLACE");
+        classInfo.setType(Type.MODIFY);
         return classInfo;
     }
 
@@ -140,16 +152,17 @@ public class ASTGenerator {
      * 获取新增类型的类的信息以及其中的所有方法，排除接口类
      * @return
      */
-    public ClassInfo getClassInfo() {
+    public ClassInfo getClassInfo(String newJavaPath) {
         TypeDeclaration typeDec = getJavaClass();
         if (typeDec == null || typeDec.isInterface()) {
             return null;
         }
         MethodDeclaration[] methodDeclarations = getMethods();
         ClassInfo classInfo = new ClassInfo();
+        classInfo.setClassFile(newJavaPath);
         classInfo.setClassName(getJavaClass().getName().toString());
         classInfo.setPackages(getPackageName());
-        classInfo.setType("ADD");
+        classInfo.setType(Type.ADD);
         List<MethodInfo> methodInfoList = new ArrayList<MethodInfo>();
         for (MethodDeclaration method: methodDeclarations) {
             MethodInfo methodInfo = new MethodInfo();
@@ -175,6 +188,9 @@ public class ASTGenerator {
         methodInfo.setMd5(MD5Encode(methodDeclaration.toString()));
         methodInfo.setMethodName(methodDeclaration.getName().toString());
         methodInfo.setParameters(methodDeclaration.parameters().toString());
+        for (Object obj : methodDeclaration.parameters()) {
+            methodInfo.addParameter(obj.toString());
+        }
     }
 
     /**

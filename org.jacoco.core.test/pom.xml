@@ -31,14 +31,48 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>org.jacoco.core</artifactId>
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-analysis</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-analysis</artifactId>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-tree</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-tree</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-analysis</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>junit</groupId>

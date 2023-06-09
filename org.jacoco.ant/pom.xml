@@ -32,6 +32,15 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>org.jacoco.report</artifactId>
+
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.core</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -41,6 +50,14 @@
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
       <scope>provided</scope>
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
   </dependencies>
 

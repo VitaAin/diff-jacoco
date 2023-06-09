@@ -32,6 +32,14 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>org.jacoco.report</artifactId>
+      <!-- add by vita start -->
+      <exclusions>
+        <exclusion>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>org.jacoco.core</artifactId>
+        </exclusion>
+      </exclusions>
+      <!-- add by vita end -->
     </dependency>
     <dependency>
       <groupId>args4j</groupId>
