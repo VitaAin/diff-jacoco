@@ -71,26 +71,26 @@ final class SourceHighlighter {
                 .pre(Styles.SOURCE + " lang-" + lang + " linenums");
         final BufferedReader lineBuffer = new BufferedReader(contents);
 
-        if (!hasLog) {
-            LogUtils.log("\n");
-            LogUtils.log("=================================================");
-            for (ClassInfo ci : CoverageBuilder.classInfos.values()) {
-                LogUtils.log("VITA ci className=" + ci.getClassName() + ", classFile=" + ci.getClassFile() + ", methods: ");
-                for (MethodInfo mi : ci.getMethodInfos().values()) {
-                    LogUtils.log("\t\t" + mi.getMethodName() + ", " + mi.getParameters());
-                }
-            }
-            LogUtils.logLine();
-            for (IClassCoverage cc : CoverageBuilder.classes.values()) {
-                LogUtils.log("VITA cc name=" + cc.getName() + ", packageName=" + cc.getPackageName() + ", sourceFileName=" + cc.getSourceFileName() + ", methods: ");
-                for (IMethodCoverage mc : cc.getMethods()) {
-                    LogUtils.log("\t\t" + mc.getName() + ", " + mc.getDesc());
-                }
-            }
-            LogUtils.log("=================================================");
-            LogUtils.log("\n");
-            hasLog = true;
-        }
+//        if (!hasLog) {
+//            LogUtils.log("\n");
+//            LogUtils.log("=================================================");
+//            for (ClassInfo ci : CoverageBuilder.classInfos.values()) {
+//                LogUtils.log("VITA ci className=" + ci.getClassName() + ", classFile=" + ci.getClassFile() + ", methods: ");
+//                for (MethodInfo mi : ci.getMethodInfos().values()) {
+//                    LogUtils.log("\t\t" + mi.getMethodName() + ", " + mi.getParameters());
+//                }
+//            }
+//            LogUtils.logLine();
+//            for (IClassCoverage cc : CoverageBuilder.classes.values()) {
+//                LogUtils.log("VITA cc name=" + cc.getName() + ", packageName=" + cc.getPackageName() + ", sourceFileName=" + cc.getSourceFileName() + ", methods: ");
+//                for (IMethodCoverage mc : cc.getMethods()) {
+//                    LogUtils.log("\t\t" + mc.getName() + ", " + mc.getDesc());
+//                }
+//            }
+//            LogUtils.log("=================================================");
+//            LogUtils.log("\n");
+//            hasLog = true;
+//        }
 
         String sourceFilePath = ((SourceFileCoverageImpl) source).getPackageName() + "/" + source.getName();
         LogUtils.log("SourceHighlighter render: sourceFilePath = " + sourceFilePath);

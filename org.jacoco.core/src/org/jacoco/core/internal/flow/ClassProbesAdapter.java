@@ -67,7 +67,7 @@ public class ClassProbesAdapter extends ClassVisitor implements
             final String signature, final String superName,
             final String[] interfaces) {
         this.name = name;
-        LogUtils.log("ClassProbesAdapter visit: name = " + name);
+//        LogUtils.log("ClassProbesAdapter visit: name = " + name);
         super.visit(version, access, name, signature, superName, interfaces);
     }
 

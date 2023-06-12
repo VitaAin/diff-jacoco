@@ -109,19 +109,19 @@ public class Analyzer {
 			@Override
 			public void visitSource(String source, String debug) {
 				super.visitSource(source, debug);
-				LogUtils.log(Analyzer.class, "visitSource", "source = " + source + ", coverage = " + coverage.getPackageName());
+//				LogUtils.log(Analyzer.class, "visitSource", "source = " + source + ", coverage = " + coverage.getPackageName());
 			}
 
 			@Override
 			public MethodProbesVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-				LogUtils.log(Analyzer.class, "visitMethod", "name = " + name + ", desc = " + desc + ", coverage = " + coverage.getPackageName());
+//				LogUtils.log(Analyzer.class, "visitMethod", "name = " + name + ", desc = " + desc + ", coverage = " + coverage.getPackageName());
 				return super.visitMethod(access, name, desc, signature, exceptions);
 			}
 
 			@Override
 			public void visitEnd() {
 				super.visitEnd();
-				LogUtils.log(Analyzer.class, "visitEnd", "coverage = " + coverage.getPackageName() + "/" + coverage.getSourceFileName());
+//				LogUtils.log(Analyzer.class, "visitEnd", "coverage = " + coverage.getPackageName() + "/" + coverage.getSourceFileName());
 				coverageVisitor.visitCoverage(coverage);
 			}
 		};

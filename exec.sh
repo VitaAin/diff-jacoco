@@ -3,6 +3,9 @@
 echo
 echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 开始 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 
+IS_DEMO=true
+#IS_DEMO=false
+
 
 PREPARED=false
 
@@ -28,22 +31,22 @@ then
   # 打包
   mvn clean install -Dmaven.javadoc.test=true -Dmaven.test.skip=true
   echo "================== 构建 diff-jacoco 结束 =================="
+fi
 
-  if [ -f $DIFF_JACOCO_TAR_PATH ]
-  then
-    echo "* 文件存在，构建成功!"
+if [ -f $DIFF_JACOCO_TAR_PATH ]
+then
+  echo "* 文件存在，构建成功!"
 
-    echo "> 删除已存在的解压路径"
-    rm -rf $DIFF_JACOCO_JAR_DIR
-    echo "> 开始解压"
-    # 解压 ./org.jacoco.startup/target/org.jacoco.startup-0.8.4.tar.gz
-    tar zxvf $DIFF_JACOCO_TAR_PATH -C $DIFF_JACOCO_TARGET_DIR
-    echo "> 结束解压"
+  echo "> 删除已存在的解压路径"
+  rm -rf $DIFF_JACOCO_JAR_DIR
+  echo "> 开始解压"
+  # 解压 ./org.jacoco.startup/target/org.jacoco.startup-0.8.4.tar.gz
+  tar zxvf $DIFF_JACOCO_TAR_PATH -C $DIFF_JACOCO_TARGET_DIR
+  echo "> 结束解压"
 
-    PREPARED=true
-  else
-    echo "* 文件不存在，构建失败！！！"
-  fi
+  PREPARED=true
+else
+  echo "* 文件不存在，构建失败！！！"
 fi
 
 if [ -d $DIFF_JACOCO_JAR_DIR ]
@@ -73,8 +76,13 @@ then
   echo "> 即将执行jacoco脚本"
   echo
 
-  CONF_FILE=$DIFF_JACOCO_DIR/exec.conf
-#  CONF_FILE=$DIFF_JACOCO_DIR/exec_cloud.conf
+  if $IS_DEMO
+  then
+    CONF_FILE=$DIFF_JACOCO_DIR/exec.conf
+  else
+    CONF_FILE=$DIFF_JACOCO_DIR/exec_cloud.conf
+  fi
+
   . $CONF_FILE
 
   echo "* 项目根目录： $PROJECT_DIR"
@@ -148,8 +156,12 @@ then
   echo "* Git 用户名：$GIT_USER_NAME"
 
   # 当前分支
-  CURRENT_BRANCH=dev_3
-#  CURRENT_BRANCH=dev_5.0.45_jacoco
+  if $IS_DEMO
+  then
+    CURRENT_BRANCH=dev_3
+  else
+    CURRENT_BRANCH=dev_5.0.45_jacoco
+  fi
   echo "* 当前分支： $CURRENT_BRANCH"
 
 
@@ -169,18 +181,26 @@ then
   if [ $DIFF_WHAT == 1 ]
   then
     echo "> 对比分支"
-    COMPARED_BRANCH=dev
-#    COMPARED_BRANCH=develop_v5.0.42
+    if $IS_DEMO
+    then
+      COMPARED_BRANCH=dev
+    else
+      COMPARED_BRANCH=develop_v5.0.42
+    fi
     echo "> 即将对比分支： $CURRENT_BRANCH 和 $COMPARED_BRANCH"
     echo
     $JACOCO_SH_PATH --loggable $LOGGABLE --git-work-dir $PROJECT_DIR --branch $CURRENT_BRANCH --compare-branch $COMPARED_BRANCH --report-dir $REPORT_DIR --exec-file-paths $EXECS --source-dirs $PROJECT_SOURCE --class-dirs $PROJECT_CLASS --git-user-name $GIT_USER_NAME --git-user-pwd $GIT_USER_PWD
   elif [ $DIFF_WHAT == 2 ]
   then
     echo "> 对比Tag"
-    TAG=tag2
-    COMPARED_TAG=tag1
-#    TAG=v5.0.45_110045_x
-#    COMPARED_TAG=v5.0.40_110040_x
+    if $IS_DEMO
+    then
+      TAG=tag2
+      COMPARED_TAG=tag1
+    else
+      TAG=v5.0.45_110045_x
+      COMPARED_TAG=v5.0.40_110040_x
+    fi
     echo "> 即将对比Tag： $TAG 和 $COMPARED_TAG"
     echo
     $JACOCO_SH_PATH --loggable $LOGGABLE --git-work-dir $PROJECT_DIR --branch $CURRENT_BRANCH --tag $TAG --compare-tag $COMPARED_TAG --report-dir $REPORT_DIR --exec-file-paths $EXECS --source-dirs $PROJECT_SOURCE --class-dirs $PROJECT_CLASS --git-user-name $GIT_USER_NAME --git-user-pwd $GIT_USER_PWD

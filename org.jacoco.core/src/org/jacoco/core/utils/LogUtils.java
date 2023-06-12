@@ -36,11 +36,11 @@ public class LogUtils {
     }
 
     public static void logDoubleLine() {
-        log("====================================================");
+        logDivider("=");
     }
 
     public static void logLine() {
-        log("————————————————————————————————————————————————————");
+        logDivider("-");
     }
 
     public static void logWithWrap(String log) {
@@ -92,6 +92,9 @@ public class LogUtils {
     }
 
     public static void log(String log) {
+        if (!sLoggable) {
+            return;
+        }
         System.out.println(log);
     }
 
@@ -104,9 +107,6 @@ public class LogUtils {
     }
 
     public static void log(String className, String method, String log) {
-        if (!sLoggable) {
-            return;
-        }
         if ((log == null || log.isEmpty()) && (className == null || className.isEmpty()) && (method == null || method.isEmpty())) {
             return;
         }

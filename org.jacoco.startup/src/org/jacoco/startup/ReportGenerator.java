@@ -203,7 +203,6 @@ public class ReportGenerator {
     private static final String CLASS_DIRS = "class-dirs";
     private static final String REMOTE_HOST = "remote-host";
     private static final String REMOTE_PORT = "remote-port";
-    private static final String EXEC_DIR = "exec-dir";
     private static final String REPORT_DIR = "report-dir";
     private static final String MYSQL_JDBC_URL = "mysql-jdbc-url";
     private static final String MYSQL_USER = "mysql-user";
@@ -217,7 +216,7 @@ public class ReportGenerator {
 
     public static void main(final String[] args) {
         try {
-            CommandLine commandLine = parseCmmandLine(args);
+            CommandLine commandLine = parseCommandLine(args);
 
             String loggableS = commandLine.getOptionValue(LOGGABLE);
             LogUtils.setLoggable(ConvertUtils.convert2Bool(loggableS));
@@ -314,7 +313,7 @@ public class ReportGenerator {
         }
     }
 
-    private static CommandLine parseCmmandLine(String[] args) throws ParseException {
+    private static CommandLine parseCommandLine(String[] args) throws ParseException {
         Options options = new Options();
         options.addOption(null, GIT_USER_NAME, true, "git用户名");
         options.addOption(null, GIT_USER_PWD, true, "git用户密码");
@@ -328,7 +327,6 @@ public class ReportGenerator {
         options.addOption(null, CLASS_DIRS, true, "字节码目录，多个用逗号分割");
         options.addOption(null, REMOTE_HOST, true, "远端地址");
         options.addOption(null, REMOTE_PORT, true, "远端端口");
-        options.addOption(null, EXEC_DIR, true, "exec文件生成的目录");
         options.addOption(null, REPORT_DIR, true, "测试报告生成的目录");
         options.addOption(null, MYSQL_JDBC_URL, true, "mysql jdbc地址");
         options.addOption(null, MYSQL_USER, true, "连接mysql的用户");
