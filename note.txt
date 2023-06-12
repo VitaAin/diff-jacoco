@@ -7,6 +7,10 @@
 # ./jacoco.sh --git-work-dir /Users/wangt/Workspace/Test/JacocoDemo --branch dev_2 --compare-branch dev --report-dir /Users/wangt/Workspace/Test/JacocoDemoReport --exec-path /Users/wangt/Workspace/Test/JacocoDemoReport/exec/coverage.ec --source-dirs /Users/wangt/Workspace/Test/JacocoDemo/app/src/main/java,/Users/wangt/Workspace/Test/JacocoDemo/app/libnumberprogressbar/src/main/java  --class-dirs /Users/wangt/Workspace/Test/JacocoDemo/app/build/intermediates/javac/debug/classes,/Users/wangt/Workspace/Test/JacocoDemo/libnumberprogressbar/build/intermediates/javac/debug/classes --git-user-name wangting --git-user-pwd WANGting215930
 
 
+java 查看依赖树：
+mvn dependency:tree -Dverbose
+
+
 
 多次报告合并：
 1、同一版本apk，多次追加写入 ec        支持，生成报告正常
@@ -19,6 +23,27 @@
 
 
 问题：
+
+
+- 打包 diff-jacoco 时报错：[ERROR] Could not find goal 'prepare-agent' in plugin org.jacoco:jacoco-maven-plugin:0.8.4 among available goals -> [Help 1]
+                     org.apache.maven.plugin.MojoNotFoundException: Could not find goal 'prepare-agent' in plugin org.jacoco:jacoco-maven-plugin:0.8.4 among available goals
+    将 org.jacoco.tests/pom.xml 中的 prepare-agent 移除项注释掉
+              <execution>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+
+
+- 打包 diff-jacoco 时报错：[ERROR] Failed to execute goal org.apache.maven.plugins:maven-plugin-plugin:3.6.0:descriptor (default-descriptor) on project jacoco-maven-plugin: Error extracting plugin descriptor: 'No mojo definitions were found for plugin: org.jacoco:jacoco-maven-plugin.' -> [Help 1]
+    在
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+    上增加配置：
+        <configuration>
+          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+        </configuration>
+
 
 
 - 不同机器上classid不对应导致报告覆盖率不准确
