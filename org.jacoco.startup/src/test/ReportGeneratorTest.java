@@ -1,5 +1,6 @@
 package test;
 
+import org.jacoco.core.internal.diff.Config;
 import org.jacoco.core.internal.diff.GitAdapter;
 import org.jacoco.core.utils.LogUtils;
 import org.jacoco.startup.ReportGenerator;
@@ -27,6 +28,9 @@ public class ReportGeneratorTest {
             "/Users/wangt/Workspace/Test/JacocoDemo/libnumberprogressbar/build/intermediates/javac/debug/classes",
             "/Users/wangt/Workspace/Test/JacocoDemo/libnumberprogressbar/build/tmp/kotlin-classes/debug"};
 
+    private static final String[] NOT_CHECK = {"com.jacoco.demo.jacoco",
+        "com.jacoco.demo.App.java"};
+
     public static void main(String[] args) {
         String title = new File(GIT_WORK_DIR).getName();
 
@@ -47,6 +51,7 @@ public class ReportGeneratorTest {
         try {
             LogUtils.setLoggable(true);
             GitAdapter.setUserInfo(GIT_USER_NAME, GIT_USER_PWD);
+            Config.setNotCheckPkgsOrFiles(NOT_CHECK);
             ReportGenerator.create(title,
 //                    new File(EXEC_PATH),
                     execFiles,

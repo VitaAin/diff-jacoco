@@ -25,7 +25,13 @@ mvn dependency:tree -Dverbose
 问题：
 
 
-- 打包 diff-jacoco 时报错：[ERROR] Could not find goal 'prepare-agent' in plugin org.jacoco:jacoco-maven-plugin:0.8.4 among available goals -> [Help 1]
+- 部分文件打开源码时不能定位到具体的方法位置
+
+
+- 进入到源码位置后，点击顶部路径中的包名位置，会跳到源码文件目录，再点击进去，直接进入源码，没有再进入方法列表；
+
+
+√ - 打包 diff-jacoco 时报错：[ERROR] Could not find goal 'prepare-agent' in plugin org.jacoco:jacoco-maven-plugin:0.8.4 among available goals -> [Help 1]
                      org.apache.maven.plugin.MojoNotFoundException: Could not find goal 'prepare-agent' in plugin org.jacoco:jacoco-maven-plugin:0.8.4 among available goals
     将 org.jacoco.tests/pom.xml 中的 prepare-agent 移除项注释掉
               <execution>
@@ -35,7 +41,7 @@ mvn dependency:tree -Dverbose
               </execution>
 
 
-- 打包 diff-jacoco 时报错：[ERROR] Failed to execute goal org.apache.maven.plugins:maven-plugin-plugin:3.6.0:descriptor (default-descriptor) on project jacoco-maven-plugin: Error extracting plugin descriptor: 'No mojo definitions were found for plugin: org.jacoco:jacoco-maven-plugin.' -> [Help 1]
+√ - 打包 diff-jacoco 时报错：[ERROR] Failed to execute goal org.apache.maven.plugins:maven-plugin-plugin:3.6.0:descriptor (default-descriptor) on project jacoco-maven-plugin: Error extracting plugin descriptor: 'No mojo definitions were found for plugin: org.jacoco:jacoco-maven-plugin.' -> [Help 1]
     在
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>

@@ -107,33 +107,17 @@ then
 #  echo "$PROJECT_SOURCE"
 #  echo "$PROJECT_CLASS"
 
-
-#  echo "* 项目源码目录： ${PROJECT_SOURCE_DIRS[*]}"
-#  PROJECT_SOURCE_DIRS_SIZE=${#PROJECT_SOURCE_DIRS[@]}
-#  echo "* 项目源码目录个数： $PROJECT_SOURCE_DIRS_SIZE"
-#  echo "* 项目字节码目录： ${PROJECT_CLASS_DIRS[*]}"
-#  PROJECT_CLASS_DIRS_SIZE=${#PROJECT_CLASS_DIRS[@]}
-#  echo "* 项目字节码目录个数： $PROJECT_CLASS_DIRS_SIZE"
-#
-#  for (( i = 0; i < PROJECT_SOURCE_DIRS_SIZE; i++ )); do
-#    if [ $i == 0 ]
-#    then
-#      PROJECT_SOURCE=${PROJECT_SOURCE_DIRS[$i]}
-#    else
-#      PROJECT_SOURCE=$PROJECT_SOURCE,${PROJECT_SOURCE_DIRS[$i]}
-#    fi
-#  done
-##  echo "$PROJECT_SOURCE"
-#
-#  for (( i = 0; i < PROJECT_CLASS_DIRS_SIZE; i++ )); do
-#    if [ $i == 0 ]
-#    then
-#      PROJECT_CLASS=${PROJECT_CLASS_DIRS[$i]}
-#    else
-#      PROJECT_CLASS=$PROJECT_CLASS,${PROJECT_CLASS_DIRS[$i]}
-#    fi
-#  done
-##  echo "$PROJECT_CLASS"
+  echo "* 需要屏蔽的包名： ${NOT_CHECK_PKGS_FILES[*]}"
+  NOT_CHECK_PKGS_FILES_SIZE=${#NOT_CHECK_PKGS_FILES[@]}
+  for (( i = 0; i < NOT_CHECK_PKGS_FILES_SIZE; i++ )); do
+    if [ $i == 0 ]
+    then
+      NOT_CHECK=${NOT_CHECK_PKGS_FILES[$i]}
+    else
+      NOT_CHECK=$NOT_CHECK,${NOT_CHECK_PKGS_FILES[$i]}
+    fi
+  done
+  echo "* NOT_CHECK： $NOT_CHECK"
 
 #  echo "* .ec文件目录： $EXEC_PATH"
   echo "* .ec文件目录： ${EXEC_PATHS[*]}"
@@ -189,7 +173,7 @@ then
     fi
     echo "> 即将对比分支： $CURRENT_BRANCH 和 $COMPARED_BRANCH"
     echo
-    $JACOCO_SH_PATH --loggable $LOGGABLE --git-work-dir $PROJECT_DIR --branch $CURRENT_BRANCH --compare-branch $COMPARED_BRANCH --report-dir $REPORT_DIR --exec-file-paths $EXECS --source-dirs $PROJECT_SOURCE --class-dirs $PROJECT_CLASS --git-user-name $GIT_USER_NAME --git-user-pwd $GIT_USER_PWD
+    $JACOCO_SH_PATH --loggable $LOGGABLE --git-work-dir $PROJECT_DIR --branch $CURRENT_BRANCH --compare-branch $COMPARED_BRANCH --report-dir $REPORT_DIR --exec-file-paths $EXECS --source-dirs $PROJECT_SOURCE --class-dirs $PROJECT_CLASS --not-check $NOT_CHECK --git-user-name $GIT_USER_NAME --git-user-pwd $GIT_USER_PWD
   elif [ $DIFF_WHAT == 2 ]
   then
     echo "> 对比Tag"
@@ -203,7 +187,7 @@ then
     fi
     echo "> 即将对比Tag： $TAG 和 $COMPARED_TAG"
     echo
-    $JACOCO_SH_PATH --loggable $LOGGABLE --git-work-dir $PROJECT_DIR --branch $CURRENT_BRANCH --tag $TAG --compare-tag $COMPARED_TAG --report-dir $REPORT_DIR --exec-file-paths $EXECS --source-dirs $PROJECT_SOURCE --class-dirs $PROJECT_CLASS --git-user-name $GIT_USER_NAME --git-user-pwd $GIT_USER_PWD
+    $JACOCO_SH_PATH --loggable $LOGGABLE --git-work-dir $PROJECT_DIR --branch $CURRENT_BRANCH --tag $TAG --compare-tag $COMPARED_TAG --report-dir $REPORT_DIR --exec-file-paths $EXECS --source-dirs $PROJECT_SOURCE --class-dirs $PROJECT_CLASS --not-check $NOT_CHECK --git-user-name $GIT_USER_NAME --git-user-pwd $GIT_USER_PWD
   else
     echo "* 参数错误！中断脚本！"
     exit

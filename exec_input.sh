@@ -36,22 +36,22 @@ then
   # 打包
   mvn clean install -Dmaven.javadoc.test=true -Dmaven.test.skip=true
   echo "================== 构建 diff-jacoco 结束 =================="
+fi
 
-  if [ -f $DIFF_JACOCO_TAR_PATH ]
-  then
-    echo "* 文件存在，构建成功!"
+if [ -f $DIFF_JACOCO_TAR_PATH ]
+then
+  echo "* 文件存在，构建成功!"
 
-    echo "> 删除已存在的解压路径"
-    rm -rf $DIFF_JACOCO_JAR_DIR
-    echo "> 开始解压"
-    # 解压 ./org.jacoco.startup/target/org.jacoco.startup-0.8.4.tar.gz
-    tar zxvf $DIFF_JACOCO_TAR_PATH -C $DIFF_JACOCO_TARGET_DIR
-    echo "> 结束解压"
+  echo "> 删除已存在的解压路径"
+  rm -rf $DIFF_JACOCO_JAR_DIR
+  echo "> 开始解压"
+  # 解压 ./org.jacoco.startup/target/org.jacoco.startup-0.8.4.tar.gz
+  tar zxvf $DIFF_JACOCO_TAR_PATH -C $DIFF_JACOCO_TARGET_DIR
+  echo "> 结束解压"
 
-    PREPARED=true
-  else
-    echo "* 文件不存在，构建失败！！！"
-  fi
+  PREPARED=true
+else
+  echo "* 文件不存在，构建失败！！！"
 fi
 
 if [ -d $DIFF_JACOCO_JAR_DIR ]
@@ -107,33 +107,17 @@ then
 #  echo "$PROJECT_SOURCE"
 #  echo "$PROJECT_CLASS"
 
-
-#  echo "* 项目源码目录： ${PROJECT_SOURCE_DIRS[*]}"
-#  PROJECT_SOURCE_DIRS_SIZE=${#PROJECT_SOURCE_DIRS[@]}
-#  echo "* 项目源码目录个数： $PROJECT_SOURCE_DIRS_SIZE"
-#  echo "* 项目字节码目录： ${PROJECT_CLASS_DIRS[*]}"
-#  PROJECT_CLASS_DIRS_SIZE=${#PROJECT_CLASS_DIRS[@]}
-#  echo "* 项目字节码目录个数： $PROJECT_CLASS_DIRS_SIZE"
-#
-#  for (( i = 0; i < PROJECT_SOURCE_DIRS_SIZE; i++ )); do
-#    if [ $i == 0 ]
-#    then
-#      PROJECT_SOURCE=${PROJECT_SOURCE_DIRS[$i]}
-#    else
-#      PROJECT_SOURCE=$PROJECT_SOURCE,${PROJECT_SOURCE_DIRS[$i]}
-#    fi
-#  done
-##  echo "$PROJECT_SOURCE"
-#
-#  for (( i = 0; i < PROJECT_CLASS_DIRS_SIZE; i++ )); do
-#    if [ $i == 0 ]
-#    then
-#      PROJECT_CLASS=${PROJECT_CLASS_DIRS[$i]}
-#    else
-#      PROJECT_CLASS=$PROJECT_CLASS,${PROJECT_CLASS_DIRS[$i]}
-#    fi
-#  done
-##  echo "$PROJECT_CLASS"
+  echo "* 需要屏蔽的包名： ${NOT_CHECK_PKGS_FILES[*]}"
+  NOT_CHECK_PKGS_FILES_SIZE=${#NOT_CHECK_PKGS_FILES[@]}
+  for (( i = 0; i < NOT_CHECK_PKGS_FILES_SIZE; i++ )); do
+    if [ $i == 0 ]
+    then
+      NOT_CHECK=${NOT_CHECK_PKGS_FILES[$i]}
+    else
+      NOT_CHECK=$NOT_CHECK,${NOT_CHECK_PKGS_FILES[$i]}
+    fi
+  done
+#  echo "* NOT_CHECK： $NOT_CHECK"
 
 #  echo "* .ec文件目录： $EXEC_PATH"
   echo "* .ec文件目录： ${EXEC_PATHS[*]}"

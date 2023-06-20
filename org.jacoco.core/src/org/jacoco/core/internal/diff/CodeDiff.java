@@ -55,6 +55,7 @@ public class CodeDiff {
         {
             //  排除测试类
             add("/src/test/java/");
+            addAll(Config.getAllNotCheck());
         }
     };
     // 需要校验的文件后缀

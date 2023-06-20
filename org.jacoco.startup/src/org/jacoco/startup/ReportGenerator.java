@@ -20,6 +20,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.eclipse.jgit.util.StringUtils;
 import org.jacoco.core.analysis.*;
+import org.jacoco.core.internal.diff.Config;
 import org.jacoco.core.internal.diff.GitAdapter;
 import org.jacoco.core.internal.diff.ReadDiffFromFile;
 import org.jacoco.core.tools.ExecFileLoader;
@@ -213,6 +214,7 @@ public class ReportGenerator {
     private static final String GIT_USER_PWD = "git-user-pwd";
     private static final String CODE_DIFF_INFO_FILE = "code-diff-info-file";
     private static final String LOGGABLE = "loggable";
+    private static final String NOT_CHECK = "not-check";
 
     public static void main(final String[] args) {
         try {
@@ -286,6 +288,12 @@ public class ReportGenerator {
                 execFiles[i] = new File(execPaths[i]);
             }
 
+            String notCheckStr = commandLine.getOptionValue(NOT_CHECK);
+            LogUtils.log(">>>>> notCheckStr:: " + notCheckStr);
+            String[] notCheck = notCheckStr.split("\\s*,\\s*");
+            LogUtils.log(">>>>> notCheck:: " + notCheck);
+            Config.setNotCheckPkgsOrFiles(notCheck);
+
             String title = new File(gitWorkDir).getName();
             LogUtils.log(">>>>> title:: " + title);
 
@@ -335,6 +343,7 @@ public class ReportGenerator {
         options.addOption(null, EXEC_FILE_PATHS, true, "exec文件路径");
         options.addOption(null, CODE_DIFF_INFO_FILE, true, "本地code diff文件");
         options.addOption(null, LOGGABLE, true, "是否打印日志");
+        options.addOption(null, NOT_CHECK, true, "不需要检测的包名/文件名");
 
         return new DefaultParser().parse(options, args, true);
     }
