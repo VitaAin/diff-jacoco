@@ -29,7 +29,8 @@ public class ReportGeneratorTest {
             "/Users/wangt/Workspace/Test/JacocoDemo/libnumberprogressbar/build/tmp/kotlin-classes/debug"};
 
     private static final String[] NOT_CHECK = {"com.jacoco.demo.jacoco",
-        "com.jacoco.demo.App.java"};
+//        "com.jacoco.demo.App.java"
+    };
 
     public static void main(String[] args) {
         String title = new File(GIT_WORK_DIR).getName();

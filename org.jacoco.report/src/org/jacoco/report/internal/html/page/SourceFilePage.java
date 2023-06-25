@@ -61,7 +61,30 @@ public class SourceFilePage extends NodePage<ISourceNode> {
 	protected void content(final HTMLElement body) throws IOException {
 		final SourceHighlighter hl = new SourceHighlighter(context.getLocale());
 		hl.render(body, getNode(), sourceReader);
+		addAutoLocationScript(body);
 		sourceReader.close();
+	}
+
+	/**
+	 * 源码页面，添加自动定位到指定位置的script脚本
+	 * 直接用href锚点定位有时会失败，这里增加补偿逻辑
+	 */
+	private void addAutoLocationScript(HTMLElement body) {
+		try {
+			HTMLElement script = body.element("script");
+			script.text("function autoLoc() {\n" +
+					"    const hash = location.hash\n" +
+//					"	 console.log(hash)\n" +
+					"    if (hash) {\n" +
+					"        const link = document.createElement('a')\n" +
+					"        link.setAttribute('href', hash)\n" +
+					"        link.click()\n" +
+					"    }\n" +
+					"}\n" +
+					"setTimeout('autoLoc()', 100)");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

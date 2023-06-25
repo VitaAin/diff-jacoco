@@ -172,7 +172,9 @@ final class SourceHighlighter {
                 style = Styles.PARTLY_COVERED;
                 break;
             default:
-                return pre;
+//                return pre;
+                style = Styles.NORMAL;
+                break;
         }
 
         return highlight(pre, line, lineNr, style);

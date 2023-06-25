@@ -79,6 +79,8 @@ public final class Styles {
 	/** Line number before each source line */
 	public static final String NR = "nr";
 
+	public static final String NORMAL = "normal";
+
 	/** Part of source code where instructions are not covered */
 	public static final String NOT_COVERED = "nc";
 

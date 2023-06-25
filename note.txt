@@ -25,10 +25,22 @@ mvn dependency:tree -Dverbose
 问题：
 
 
-- 部分文件打开源码时不能定位到具体的方法位置
+√ - 部分文件打开源码时不能定位到具体的方法位置
+    - 原因一：
+        - 跳转到具体方法位置逻辑为：在方法列表中方法得到关联链接 href 中拼接了方法体首行的行号（如：<a href="NetworkUtils.java.html#L212" class="el_method">isNetworkAvailable(Context, boolean)</a>），在源码页面中对应行的 id 为 "L{行号}"，以此实现关联跳转
+        - 经测试，有概率跳转后定位不到对应行，未找到规律，怀疑是网页兼容问题，可以跟张杰讨论下
+        - 与张杰沟通后，确认为 a 标签的锚点跳转是否生效可能跟页面加载情况有关，可以增加自动跳转的 script 补偿逻辑
+        - 见：SourceFilePage.addAutoLocationScript() 方法
+    - 原因二：
+        - 源码页面，部分没有染色的代码行，对应标签上没有添加锚点对应的 id （id="L{行号}"）
+        - 解决：源码页面所有代码行对应的标签都添加 id
+        - 改动见：SourceHighlighter.highlight(final HTMLElement pre, final ILine line, final int lineNr, int lineStatus) 方法，将 default 分支的 return pre 逻辑改为 style = Styles.NORMAL
 
 
-- 进入到源码位置后，点击顶部路径中的包名位置，会跳到源码文件目录，再点击进去，直接进入源码，没有再进入方法列表；
+√ - 进入到源码位置后，点击顶部路径中的包名位置，会显示源码文件列表，再点击进去，直接进入源码，没有再进入方法列表；
+    这是 Jacoco 的报告本身设计如此，进入源码文件后，顶部面包屑的包名路径的 href 由 index.html 变更为 index.source.html ，所以再次进入包名下时，显示的是源码列表而不是类列表
+        - 可通过网页的开发者工具查看
+    解决方式：可以直接将 PackageSourcePage.getFileName() 方法的返回值改为 "index.html"
 
 
 √ - 打包 diff-jacoco 时报错：[ERROR] Could not find goal 'prepare-agent' in plugin org.jacoco:jacoco-maven-plugin:0.8.4 among available goals -> [Help 1]

@@ -108,7 +108,9 @@ public class PackageSourcePage extends TablePage<IPackageCoverage> {
 
 	@Override
 	protected String getFileName() {
-		return "index.source.html";
+		// 返回值为 "index.source.html" 时，包名下的页面显示源码文件列表；
+		// 将返回值改为 "index.html"，则显示类列表
+		return "index.html";
 	}
 
 	@Override
