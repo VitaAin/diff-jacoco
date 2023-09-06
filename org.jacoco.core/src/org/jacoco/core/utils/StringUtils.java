@@ -20,4 +20,11 @@ public class StringUtils {
         return c == null || c.trim().length() == 0;
     }
 
+    public static String checkString(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s;
+    }
+
 }

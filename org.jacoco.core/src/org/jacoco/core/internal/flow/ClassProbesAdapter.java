@@ -78,7 +78,7 @@ public class ClassProbesAdapter extends ClassVisitor implements
         final MethodProbesVisitor methodProbes;
         final MethodProbesVisitor mv = cv.visitMethod(access, name, desc,
                 signature, exceptions);
-        LogUtils.log(getClass(), "visitMethod", "^^^ : this.name = " + this.name + ", name = " + name);
+//        LogUtils.log(getClass(), "visitMethod", "^^^ : this.name = " + this.name + ", name = " + name);
         //	增量计算覆盖率
 //        if (mv != null && isContainsMethod(name, CoverageBuilder.classInfos)) {
 //            methodProbes = mv;
@@ -99,8 +99,8 @@ public class ClassProbesAdapter extends ClassVisitor implements
             @Override
             public void visitEnd() {
                 super.visitEnd();
-                LogUtils.log(Analyzer.class, "visitEnd", "trackFrames = " + trackFrames
-                        + ", name = " + name + ", desc = " + desc);
+//                LogUtils.log(getClass(), "visitEnd", "trackFrames = " + trackFrames
+//                        + ", name = " + name + ", desc = " + desc);
                 LabelFlowAnalyzer.markLabels(this);
                 final MethodProbesAdapter probesAdapter = new MethodProbesAdapter(
                         methodProbes, ClassProbesAdapter.this);

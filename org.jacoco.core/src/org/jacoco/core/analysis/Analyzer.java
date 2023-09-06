@@ -92,8 +92,8 @@ public class Analyzer {
 			noMatch = false;
 		}
 		final ClassCoverageImpl coverage = new ClassCoverageImpl(className, classid, noMatch);
-		LogUtils.log(getClass(), "createAnalyzingVisitor", "classid = " + classid + ", className = " + className
-				+ ", noMatch = " + noMatch);
+//		LogUtils.log(getClass(), "createAnalyzingVisitor", "classid = " + classid + ", className = " + className
+//				+ ", noMatch = " + noMatch);
 
 //		LogUtils.log(getClass(), "createAnalyzingVisitor", "coverage: pkg=" + coverage.getPackageName()
 //				+ ", name=" + coverage.getName() + ", srcFileName=" + coverage.getSourceFileName());
@@ -131,9 +131,9 @@ public class Analyzer {
 	private boolean analyzeClass(final byte[] source) {
 		final long classId = CRC64.classId(source);
 		final ClassReader reader = InstrSupport.classReaderFor(source);
-		LogUtils.logWrap();
-		LogUtils.logLine();
-		LogUtils.log(getClass(), "analyzeClass", reader.getClassName());
+//		LogUtils.logWrap();
+//		LogUtils.logLine();
+//		LogUtils.log(getClass(), "analyzeClass", reader.getClassName());
 		if ((reader.getAccess() & Opcodes.ACC_MODULE) != 0) {
 			return false;
 		}
@@ -269,9 +269,9 @@ public class Analyzer {
 				in.close();
 			}
 		}
-		if (count > 0) {
-			LogUtils.log(getClass(), "analyzeAll", file.getName() + " > count >> " + count);
-		}
+//		if (count > 0) {
+//			LogUtils.log(getClass(), "analyzeAll", file.getName() + " > count >> " + count);
+//		}
 		return count;
 	}
 

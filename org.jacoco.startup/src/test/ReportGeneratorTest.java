@@ -7,11 +7,13 @@ import org.jacoco.startup.ReportGenerator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ReportGeneratorTest {
 
-    private static final String GIT_WORK_DIR = "/Users/wangt/Workspace/Test/JacocoDemo";
-    private static final String CURRENT_BRANCH = "dev_3";
+//    private static final String GIT_WORK_DIR = "/Users/wangt/Workspace/Test/JacocoDemo";
+    private static final String GIT_WORK_DIR = "/Users/wangt/Workspace/2345Projects/WeatherAndroid";
+    private static final String CURRENT_BRANCH = "doov_5.4.9_jacoco";
     private static final String COMPARED_BRANCH = "dev";
     private static final String TAG = "dev_3";
     private static final String COMPARED_TAG = "dev";

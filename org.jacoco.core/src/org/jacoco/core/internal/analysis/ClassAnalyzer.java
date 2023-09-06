@@ -80,7 +80,7 @@ public class ClassAnalyzer extends ClassProbesVisitor
 
 	@Override
 	public void visitSource(final String source, final String debug) {
-		LogUtils.log(ClassAnalyzer.class, "visitSource", "source = " + source + ", coverage.getPackageName = " + coverage.getPackageName());
+//		LogUtils.log(ClassAnalyzer.class, "visitSource", "source = " + source + ", coverage.getPackageName = " + coverage.getPackageName());
 		coverage.setSourceFileName(stringPool.get(source));
 		sourceDebugExtension = debug;
 	}
@@ -93,7 +93,7 @@ public class ClassAnalyzer extends ClassProbesVisitor
 		if (sourceInfo == null) {
 			return null;
 		}
-		LogUtils.log(ClassAnalyzer.class, "visitMethod", "coverage.getName = " + coverage.getName() + ", coverage.getPackageName = " + coverage.getPackageName() + ", sourceInfo = " + sourceInfo);
+//		LogUtils.log(ClassAnalyzer.class, "visitMethod", "coverage.getName = " + coverage.getName() + ", coverage.getPackageName = " + coverage.getPackageName() + ", sourceInfo = " + sourceInfo);
 
 		InstrSupport.assertNotInstrumented(name, coverage.getName());
 
@@ -126,7 +126,7 @@ public class ClassAnalyzer extends ClassProbesVisitor
 		mcc.calculate(mc);
 		SourceInfo si = Utils.getSourceInfo(coverage);
 		boolean containsAddLines = Utils.linesContainsAddLines(mc.getFirstLine(), mc.getLastLine(), si);
-		LogUtils.log(ClassAnalyzer.class, "addMethodCoverage", "containsAddLines = " + containsAddLines);
+//		LogUtils.log(ClassAnalyzer.class, "addMethodCoverage", "containsAddLines = " + containsAddLines);
 		if (containsAddLines) {
 			mcc.increment(mc, coverage);
 

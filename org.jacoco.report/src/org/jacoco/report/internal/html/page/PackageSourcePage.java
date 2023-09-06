@@ -79,13 +79,13 @@ public class PackageSourcePage extends TablePage<IPackageCoverage> {
 
 	private final void renderSourceFilePages() throws IOException {
 		final String packagename = getNode().getName();
-		LogUtils.log("####### PackageSourcePage renderSourceFilePages: packagename = " + packagename);
+//		LogUtils.log("####### PackageSourcePage renderSourceFilePages: packagename = " + packagename);
 		for (final ISourceFileCoverage s : getNode().getSourceFiles()) {
 			if (!s.containsCode()) {
 				continue;
 			}
 			final String sourcename = s.getName();
-			LogUtils.log("####### PackageSourcePage renderSourceFilePages: sourcename = " + sourcename);
+//			LogUtils.log("####### PackageSourcePage renderSourceFilePages: sourcename = " + sourcename);
 			final Reader reader = locator
 					.getSourceFile(packagename, sourcename);
 			if (reader == null) {

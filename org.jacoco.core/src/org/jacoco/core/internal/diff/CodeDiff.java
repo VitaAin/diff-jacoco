@@ -345,22 +345,22 @@ public class CodeDiff {
                     LogUtils.log(">>>>>>> batchPrepareDiffMethod local data:: " + allList.size());
                 } else {
                     // add by vita 将diff信息写入文件，方便查看
-                    if (LogUtils.isLoggable()) {
-                        FileUtils.writeFile("/Users/wangt/Workspace/Test/JacocoDemoReport/log/diff-origin.json", JSON.toJSONString(diffEntryList));
-                    }
+//                    if (LogUtils.isLoggable()) {
+//                        FileUtils.writeFile("/Users/wangt/Workspace/Test/JacocoDemoReport/log/diff-origin.json", JSON.toJSONString(diffEntryList));
+//                    }
 
                     for (DiffEntry diffEntry : diffEntryList) {
-//                        LogUtils.log(">>>>>>> batchPrepareDiffMethod diffEntry:: " + diffEntry);
                         ClassInfo classInfo = prepareDiffMethod(gitAdapter, branchName, oldBranchName, df, diffEntry);
+//                        LogUtils.log(">>>>>>> batchPrepareDiffMethod diffEntry:: " + diffEntry + ", " + classInfo);
                         if (classInfo != null) {
                             allList.add(classInfo);
                             LogUtils.log("CodeDiff", "batchPrepareDiffMethod", "** " + classInfo);
                         }
                     }
                     // add by vita 将diff信息写入文件，方便查看
-                    if (LogUtils.isLoggable()) {
-                        FileUtils.writeFile("/Users/wangt/Workspace/Test/JacocoDemoReport/log/diff-clsssinfo.json", JSON.toJSONString(allList));
-                    }
+//                    if (LogUtils.isLoggable()) {
+//                        FileUtils.writeFile("/Users/wangt/Workspace/Test/JacocoDemoReport/log/diff-clsssinfo.json", JSON.toJSONString(allList));
+//                    }
                 }
                 return allList;
             };

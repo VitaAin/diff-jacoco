@@ -106,10 +106,17 @@ public class LogUtils {
         }
     }
 
-    public static void log(String className, String method, String log) {
-        if ((log == null || log.isEmpty()) && (className == null || className.isEmpty()) && (method == null || method.isEmpty())) {
+    public static void log(String className, String method, String... logs) {
+        if ((logs == null || logs.length == 0) && (className == null || className.isEmpty()) && (method == null || method.isEmpty())) {
             return;
         }
+        StringBuilder sb = new StringBuilder();
+        if (logs != null) {
+            for (String s : logs) {
+                sb.append(", ").append(s);
+            }
+        }
+        String log = sb.toString();
         if (method != null && !method.isEmpty()) {
             log = method + ":: " + log;
         }

@@ -3,8 +3,8 @@
 echo
 echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 开始 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 
-IS_DEMO=true
-#IS_DEMO=false
+#IS_DEMO=true
+IS_DEMO=false
 
 
 PREPARED=false
@@ -80,7 +80,8 @@ then
   then
     CONF_FILE=$DIFF_JACOCO_DIR/exec.conf
   else
-    CONF_FILE=$DIFF_JACOCO_DIR/exec_cloud.conf
+#    CONF_FILE=$DIFF_JACOCO_DIR/exec_cloud.conf
+    CONF_FILE=$DIFF_JACOCO_DIR/exec_weather.conf
   fi
 
   . $CONF_FILE
@@ -94,15 +95,32 @@ then
   PATH_JAVA_CLASS=build/intermediates/javac/debug/classes
   PATH_KOTLIN_CLASS=build/tmp/kotlin-classes/debug
 
+  echo "* 项目flavors： ${PROJECT_FLAVORS[*]}"
+  PROJECT_FLAVORS_SIZE=${#PROJECT_FLAVORS[@]}
+  echo "* 项目flavors个数： $PROJECT_FLAVORS_SIZE"
+
+  for (( i = 0; i < PROJECT_FLAVORS_SIZE; i++ )); do
+    PATH_JAVA_CLASS_ON_FLAVORS[$i]=build/intermediates/javac/${PROJECT_FLAVORS[$i]}Debug/classes
+  done
+  echo "* java class co flavors个数： ${#PATH_JAVA_CLASS_ON_FLAVORS[@]}"
+  echo "* java class co flavors： ${PATH_JAVA_CLASS_ON_FLAVORS[*]}"
+
+
   for (( i = 0; i < PROJECT_MODULES_SIZE; i++ )); do
+    TMP_SRC_PATH=$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_JAVA_CODE
+    TMP_CLZ_PATH=$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_JAVA_CLASS,$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_KOTLIN_CLASS
     if [ $i == 0 ]
     then
-      PROJECT_SOURCE=$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_JAVA_CODE
-      PROJECT_CLASS=$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_JAVA_CLASS,$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_KOTLIN_CLASS
+      PROJECT_SOURCE=$TMP_SRC_PATH
+      PROJECT_CLASS=$TMP_CLZ_PATH
     else
-      PROJECT_SOURCE=$PROJECT_SOURCE,$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_JAVA_CODE
-      PROJECT_CLASS=$PROJECT_CLASS,$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_JAVA_CLASS,$PROJECT_DIR/${PROJECT_MODULES[$i]}/$PATH_KOTLIN_CLASS
+      PROJECT_SOURCE=$PROJECT_SOURCE,$TMP_SRC_PATH
+      PROJECT_CLASS=$PROJECT_CLASS,$TMP_CLZ_PATH
     fi
+
+    for (( j = 0; j < PROJECT_FLAVORS_SIZE; j++ )); do
+      PROJECT_CLASS=$PROJECT_CLASS,$PROJECT_DIR/${PROJECT_MODULES[$i]}/${PATH_JAVA_CLASS_ON_FLAVORS[$j]}
+    done
   done
 #  echo "$PROJECT_SOURCE"
 #  echo "$PROJECT_CLASS"
@@ -144,7 +162,8 @@ then
   then
     CURRENT_BRANCH=dev_3
   else
-    CURRENT_BRANCH=dev_5.0.45_jacoco
+#    CURRENT_BRANCH=dev_5.0.45_jacoco
+    CURRENT_BRANCH=doov_5.4.9_jacoco
   fi
   echo "* 当前分支： $CURRENT_BRANCH"
 
@@ -169,7 +188,8 @@ then
     then
       COMPARED_BRANCH=dev
     else
-      COMPARED_BRANCH=develop_v5.0.42
+#      COMPARED_BRANCH=develop_v5.0.42
+      COMPARED_BRANCH=dev
     fi
     echo "> 即将对比分支： $CURRENT_BRANCH 和 $COMPARED_BRANCH"
     echo

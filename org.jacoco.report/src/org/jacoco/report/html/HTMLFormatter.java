@@ -140,7 +140,7 @@ public class HTMLFormatter implements IHTMLReportContext {
 				false);
 		t.add("Cov.", Styles.CTR2, new PercentageColumn(CounterEntity.BRANCH, locale),
 				false);
-		addMissedTotalColumns(t, "Cxty", CounterEntity.COMPLEXITY);
+//		addMissedTotalColumns(t, "Cxty", CounterEntity.COMPLEXITY);
 		addMissedTotalColumns(t, "Lines", CounterEntity.LINE);
 		addMissedTotalColumns(t, "Methods", CounterEntity.METHOD);
 		addMissedTotalColumns(t, "Classes", CounterEntity.CLASS);

@@ -18,7 +18,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.eclipse.jgit.util.StringUtils;
 import org.jacoco.core.analysis.*;
 import org.jacoco.core.internal.diff.Config;
 import org.jacoco.core.internal.diff.GitAdapter;
@@ -27,6 +26,7 @@ import org.jacoco.core.tools.ExecFileLoader;
 import org.jacoco.core.utils.CollectionUtils;
 import org.jacoco.core.utils.ConvertUtils;
 import org.jacoco.core.utils.LogUtils;
+import org.jacoco.core.utils.StringUtils;
 import org.jacoco.report.DirectorySourceFileLocator;
 import org.jacoco.report.FileMultiReportOutput;
 import org.jacoco.report.IReportVisitor;
@@ -166,13 +166,13 @@ public class ReportGenerator {
         GitAdapter.setCredentialsProvider(GitAdapter.sUserName, GitAdapter.sUserPwd);
 
         CoverageBuilder coverageBuilder = null;
-        if (StringUtils.isEmptyOrNull(tag)) {
-            if (StringUtils.isEmptyOrNull(compareBranch)) {
+        if (StringUtils.isNullOrEmpty2(tag)) {
+            if (StringUtils.isNullOrEmpty2(compareBranch)) {
                 coverageBuilder = new CoverageBuilder(gitPath, branch);
             } else {
                 coverageBuilder = new CoverageBuilder(gitPath, branch, compareBranch);
             }
-        } else if (StringUtils.isEmptyOrNull(compareTag)) {
+        } else if (StringUtils.isNullOrEmpty2(compareTag)) {
             System.out.println("compareTag is null");
             System.exit(-1);
         } else {
@@ -220,11 +220,11 @@ public class ReportGenerator {
         try {
             CommandLine commandLine = parseCommandLine(args);
 
-            String loggableS = commandLine.getOptionValue(LOGGABLE);
+            String loggableS = StringUtils.checkString(commandLine.getOptionValue(LOGGABLE));
             LogUtils.setLoggable(ConvertUtils.convert2Bool(loggableS));
             LogUtils.log(">>>>> loggable:: " + loggableS);
 
-            String reportDir = commandLine.getOptionValue(REPORT_DIR);
+            String reportDir = StringUtils.checkString(commandLine.getOptionValue(REPORT_DIR));
             LogUtils.log(">>>>> reportDir:: " + reportDir);
 
 //            //下载exec文件
@@ -235,30 +235,30 @@ public class ReportGenerator {
 //            client.dump();
 
             //生成报告
-            String gitUserName = commandLine.getOptionValue(GIT_USER_NAME);
+            String gitUserName = StringUtils.checkString(commandLine.getOptionValue(GIT_USER_NAME));
             LogUtils.log(">>>>> gitUserName:: " + gitUserName);
-            String gitUserPwd = commandLine.getOptionValue(GIT_USER_PWD);
+            String gitUserPwd = StringUtils.checkString(commandLine.getOptionValue(GIT_USER_PWD));
 //            LogUtils.log(">>>>> gitUserPwd:: " + gitUserPwd);
             GitAdapter.setUserInfo(gitUserName, gitUserPwd);
 
-            String codeDiffInfoFile = commandLine.getOptionValue(CODE_DIFF_INFO_FILE);
+            String codeDiffInfoFile = StringUtils.checkString(commandLine.getOptionValue(CODE_DIFF_INFO_FILE));
             LogUtils.log(">>>>> codeDiffInfoFile:: " + codeDiffInfoFile);
             ReadDiffFromFile.setFilePath(codeDiffInfoFile);
 
-            String branch = commandLine.getOptionValue(BRANCH);
+            String branch = StringUtils.checkString(commandLine.getOptionValue(BRANCH));
             LogUtils.log(">>>>> branch:: " + branch);
-            String compareBranch = commandLine.getOptionValue(COMPARE_BRANCH);
+            String compareBranch = StringUtils.checkString(commandLine.getOptionValue(COMPARE_BRANCH));
             LogUtils.log(">>>>> compareBranch:: " + compareBranch);
 
-            String gitWorkDir = commandLine.getOptionValue(GIT_WORK_DIR);
+            String gitWorkDir = StringUtils.checkString(commandLine.getOptionValue(GIT_WORK_DIR));
             LogUtils.log(">>>>> gitWorkDir:: " + gitWorkDir);
 
-            String tag = commandLine.getOptionValue(TAG);
+            String tag = StringUtils.checkString(commandLine.getOptionValue(TAG));
             LogUtils.log(">>>>> tag:: " + tag);
-            String compareTag = commandLine.getOptionValue(COMPARE_TAG);
+            String compareTag = StringUtils.checkString(commandLine.getOptionValue(COMPARE_TAG));
             LogUtils.log(">>>>> compareTag:: " + compareTag);
 
-            String sourceDirsStr = commandLine.getOptionValue(SOURCE_DIRS);
+            String sourceDirsStr = StringUtils.checkString(commandLine.getOptionValue(SOURCE_DIRS));
             LogUtils.log(">>>>> sourceDirsStr:: " + sourceDirsStr);
             String[] sourceDirs = sourceDirsStr.split("\\s*,\\s*");
             LogUtils.log(">>>>> sourceDirs:: " + sourceDirs);
@@ -268,7 +268,7 @@ public class ReportGenerator {
                 sourceDirFiles[i] = new File(sourceDirs[i]);
             }
 
-            String classDirsStr = commandLine.getOptionValue(CLASS_DIRS);
+            String classDirsStr = StringUtils.checkString(commandLine.getOptionValue(CLASS_DIRS));
             LogUtils.log(">>>>> classDirsStr:: " + classDirsStr);
             String[] classDirs = classDirsStr.split("\\s*,\\s*");
             LogUtils.log(">>>>> classDirs:: " + classDirs);
@@ -278,7 +278,7 @@ public class ReportGenerator {
                 classDirFiles[i] = new File(classDirs[i]);
             }
 
-            String execPathsStr = commandLine.getOptionValue(EXEC_FILE_PATHS);
+            String execPathsStr = StringUtils.checkString(commandLine.getOptionValue(EXEC_FILE_PATHS));
             LogUtils.log(">>>>> execPathsStr:: " + execPathsStr);
             String[] execPaths = execPathsStr.split("\\s*,\\s*");
             LogUtils.log(">>>>> execPaths:: " + execPaths);
@@ -288,20 +288,22 @@ public class ReportGenerator {
                 execFiles[i] = new File(execPaths[i]);
             }
 
-            String notCheckStr = commandLine.getOptionValue(NOT_CHECK);
+            String notCheckStr = StringUtils.checkString(commandLine.getOptionValue(NOT_CHECK));
             LogUtils.log(">>>>> notCheckStr:: " + notCheckStr);
-            String[] notCheck = notCheckStr.split("\\s*,\\s*");
-            LogUtils.log(">>>>> notCheck:: " + notCheck);
-            Config.setNotCheckPkgsOrFiles(notCheck);
+            if (!org.jacoco.core.utils.StringUtils.isNullOrEmpty2(notCheckStr)) {
+                String[] notCheck = notCheckStr.split("\\s*,\\s*");
+                LogUtils.log(">>>>> notCheck:: " + notCheck);
+                Config.setNotCheckPkgsOrFiles(notCheck);
+            }
 
             String title = new File(gitWorkDir).getName();
             LogUtils.log(">>>>> title:: " + title);
 
-            String mysqlJdbcUrl = commandLine.getOptionValue(MYSQL_JDBC_URL);
+            String mysqlJdbcUrl = StringUtils.checkString(commandLine.getOptionValue(MYSQL_JDBC_URL));
 //            LogUtils.log(">>>>> mysqlJdbcUrl:: " + mysqlJdbcUrl);
-            String userName = commandLine.getOptionValue(MYSQL_USER);
+            String userName = StringUtils.checkString(commandLine.getOptionValue(MYSQL_USER));
 //            LogUtils.log(">>>>> userName:: " + userName);
-            String password = commandLine.getOptionValue(MYSQL_PASSWORD);
+            String password = StringUtils.checkString(commandLine.getOptionValue(MYSQL_PASSWORD));
 //            LogUtils.log(">>>>> password:: " + password);
             boolean useSql = userName == null || userName.isEmpty() || password == null || password.isEmpty();
 //            LogUtils.log(">>>>> useSql:: " + useSql);

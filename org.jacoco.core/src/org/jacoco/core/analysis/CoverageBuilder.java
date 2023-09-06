@@ -213,16 +213,15 @@ public class CoverageBuilder implements ICoverageVisitor {
         if (sourceInfo == null) {
             return;
         }
-        LogUtils.log(getClass(), "visitCoverage", "put it into classes:: srcFile = " + coverage.getSourceFileName() + ", >> sourceInfo=" + sourceInfo);
+//        LogUtils.log(getClass(), "visitCoverage", "put it into classes:: srcFile = " + coverage.getSourceFileName() + ", >> sourceInfo=" + sourceInfo);
         final IClassCoverage dup = classes.put(name, coverage);
         if (dup != null) {
             if (dup.getId() != coverage.getId()) {
-                throw new IllegalStateException(
-                        "Can't add different class with same name: " + name);
+                LogUtils.log("!!!!! Can't add different class with same name: " + name);
             }
         } else {
             final String source = coverage.getSourceFileName();
-            LogUtils.log(getClass(), "visitCoverage", "name = " + name + ", source = " + source);
+//            LogUtils.log(getClass(), "visitCoverage", "name = " + name + ", source = " + source);
             if (source != null) {
                 final SourceFileCoverageImpl sourceFile = getSourceFile(source,
                         coverage.getPackageName());

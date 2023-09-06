@@ -82,19 +82,15 @@ public class SourceNodeImpl extends CoverageNodeImpl implements ISourceNode {
 	 */
 	public void increment(final ISourceNode child) {
 //		LogUtils.logWrap();
-		LogUtils.logDivider("*", "start");
+//		LogUtils.logDivider("*", "start");
 		ICounter ic = child.getInstructionCounter();
 		ICounter bc = child.getBranchCounter();
 		ICounter cc = child.getComplexityCounter();
 		ICounter mc = child.getMethodCounter();
 		ICounter clzC = child.getClassCounter();
-        if (child instanceof SourceFileCoverageImpl) {
-            String sourceFilePath = ((SourceFileCoverageImpl) child).getPackageName() + "/" + child.getName();
-            LogUtils.log(getClass(), "increment", "sourceFilePath = " + sourceFilePath);
-        }
-        LogUtils.log(getClass(), "increment", "name=" + child.getName()
-                + ", InstructionCounter=" + ic + ", BranchCounter=" + bc + ", ComplexityCounter=" + cc
-                + ", MethodCounter=" + mc + ", ClassCounter=" + clzC);
+//        LogUtils.log(getClass(), "increment", "name=" + child.getName()
+//                + ", InstructionCounter=" + ic + ", BranchCounter=" + bc + ", ComplexityCounter=" + cc
+//                + ", MethodCounter=" + mc + ", ClassCounter=" + clzC);
 		instructionCounter = instructionCounter.increment(ic);
 		branchCounter = branchCounter.increment(bc);
 		complexityCounter = complexityCounter.increment(cc);
@@ -110,7 +106,7 @@ public class SourceNodeImpl extends CoverageNodeImpl implements ISourceNode {
 						line.getBranchCounter(), i);
 			}
 		}
-		LogUtils.logDivider("*", "end");
+//		LogUtils.logDivider("*", "end");
 	}
 
 	/**
